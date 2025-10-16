@@ -1,0 +1,81 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../db');
+const { authenticateToken, checkPermission } = require('../middleware/auth');
+
+// Minimal QC CRUD for MVP
+
+// GET list
+router.get('/', authenticateToken, checkPermission('qc', 'read', 'inspections'), async (req, res) => {
+    try {
+        const { startDate, endDate, productId, status } = req.query;
+        let sql = `SELECT id, inspection_date, inspector_id, product_id, work_order_id, status, defect_type, JSON_EXTRACT(checklist, '$') as checklist, photos FROM quality_inspections WHERE 1=1`;
+        const params = [];
+        if (startDate) { sql += ' AND DATE(inspection_date) >= ?'; params.push(startDate); }
+        if (endDate) { sql += ' AND DATE(inspection_date) <= ?'; params.push(endDate); }
+        if (productId) { sql += ' AND product_id = ?'; params.push(productId); }
+        if (status) { sql += ' AND status = ?'; params.push(status); }
+        sql += ' ORDER BY inspection_date DESC LIMIT 500';
+
+        const [rows] = await db.query(sql, params);
+        res.json({ success: true, data: rows });
+    } catch (error) {
+        console.error('QC list error', error);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan' });
+    }
+});
+
+// GET single
+router.get('/:id', authenticateToken, checkPermission('qc', 'read', 'inspections'), async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM quality_inspections WHERE id = ?', [req.params.id]);
+        if (!rows || rows.length === 0) return res.status(404).json({ success: false, message: 'Not found' });
+        res.json({ success: true, data: rows[0] });
+    } catch (error) {
+        console.error('QC get error', error);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan' });
+    }
+});
+
+// POST create
+router.post('/', authenticateToken, checkPermission('qc', 'create', 'inspections'), async (req, res) => {
+    try {
+        const { inspection_date, inspector_id, product_id, work_order_id, status, checklist, defect_type, photos, notes } = req.body;
+        const sql = `INSERT INTO quality_inspections (inspection_date, inspector_id, product_id, work_order_id, status, checklist, defect_type, photos, notes, created_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+        const params = [inspection_date || new Date(), inspector_id || null, product_id || null, work_order_id || null, status || 'pending', JSON.stringify(checklist || []), defect_type || null, JSON.stringify(photos || []), notes || null];
+        const [result] = await db.query(sql, params);
+        const [row] = await db.query('SELECT * FROM quality_inspections WHERE id = ?', [result.insertId]);
+        res.json({ success: true, data: row[0] });
+    } catch (error) {
+        console.error('QC create error', error);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan' });
+    }
+});
+
+// PUT update
+router.put('/:id', authenticateToken, checkPermission('qc', 'update', 'inspections'), async (req, res) => {
+    try {
+        const { status, checklist, defect_type, photos, notes, approved_by } = req.body;
+        const params = [];
+        const updates = [];
+        if (status !== undefined) { updates.push('status = ?'); params.push(status); }
+        if (checklist !== undefined) { updates.push('checklist = ?'); params.push(JSON.stringify(checklist)); }
+        if (defect_type !== undefined) { updates.push('defect_type = ?'); params.push(defect_type); }
+        if (photos !== undefined) { updates.push('photos = ?'); params.push(JSON.stringify(photos)); }
+        if (notes !== undefined) { updates.push('notes = ?'); params.push(notes); }
+        if (approved_by !== undefined) { updates.push('approved_by = ?'); params.push(approved_by); updates.push('approved_at = NOW()'); }
+        if (updates.length === 0) return res.status(400).json({ success: false, message: 'No fields to update' });
+
+        params.push(req.params.id);
+        const sql = `UPDATE quality_inspections SET ${updates.join(', ')} WHERE id = ?`;
+        await db.query(sql, params);
+        const [row] = await db.query('SELECT * FROM quality_inspections WHERE id = ?', [req.params.id]);
+        res.json({ success: true, data: row[0] });
+    } catch (error) {
+        console.error('QC update error', error);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan' });
+    }
+});
+
+module.exports = router;
