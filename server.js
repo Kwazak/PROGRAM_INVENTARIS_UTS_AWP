@@ -12,6 +12,9 @@ const { config, helpers, middleware } = require('./src');
 const { logger } = helpers;
 const { ErrorHandler, requestLogger } = middleware;
 
+// Import database init
+const initDatabase = require('./database/init');
+
 const app = express();
 const PORT = config.server.port;
 
@@ -217,10 +220,20 @@ if (process.env.MYSQL_URL) {
 }
 
 // Test database connection before starting server
-config.database.testConnection().then((connected) => {
+config.database.testConnection().then(async (connected) => {
     if (!connected) {
         logger.error('Failed to connect to database. Server will not start.');
         process.exit(1);
+    }
+
+    // Initialize database (run schema if needed)
+    try {
+        logger.info('Initializing database schema...');
+        await initDatabase();
+        logger.success('Database schema initialized successfully!');
+    } catch (error) {
+        logger.warn('Database initialization warning:', error.message);
+        // Continue anyway, schema might already exist
     }
 
     // Listen on all network interfaces
