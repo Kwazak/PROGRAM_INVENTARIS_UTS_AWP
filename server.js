@@ -16,7 +16,10 @@ const { ErrorHandler, requestLogger } = middleware;
 const initDatabase = require('./database/init');
 
 const app = express();
-const PORT = config.server.port;
+
+// FIXED: Railway provides PORT via environment variable
+const PORT = process.env.PORT || config.server.port || 3000;
+const HOST = '0.0.0.0'; // Required for Railway
 
 // ============================================
 // MIDDLEWARE
@@ -225,14 +228,15 @@ config.database.testConnection().then(async (connected) => {
         // Continue anyway, schema might already exist
     }
 
-    // Listen on all network interfaces
-    app.listen(PORT, config.server.host, () => {
+    // FIXED: Listen on 0.0.0.0 for Railway compatibility
+    app.listen(PORT, HOST, () => {
         const networkAddresses = getNetworkAddresses();
         
         console.log('='.repeat(60));
         console.log('FACTORY INVENTORY SYSTEM - MODULAR VERSION');
         console.log('='.repeat(60));
         logger.success(`Server running on port ${PORT}`);
+        logger.info(`Host: ${HOST}`);
         logger.info(`Started at: ${new Date().toLocaleString('id-ID')}`);
         logger.info(`Environment: ${config.server.env}`);
         
@@ -244,31 +248,6 @@ config.database.testConnection().then(async (connected) => {
         }
         
         console.log('='.repeat(60));
-        
-        // Local access
-        console.log('\nLOCAL ACCESS:');
-        console.log('   http://localhost:' + PORT);
-        console.log('   http://127.0.0.1:' + PORT);
-        
-        // Network access
-        if (networkAddresses.length > 0) {
-            console.log('\nNETWORK ACCESS (from other devices on same WiFi):');
-            networkAddresses.forEach((addr, index) => {
-                console.log('\n   ' + (index + 1) + '. ' + addr.interface);
-                console.log('      IP Address: ' + addr.address);
-                console.log('      URL: http://' + addr.address + ':' + PORT);
-            });
-            
-            console.log('\nQUICK START:');
-            console.log('   1. Connect other device to same WiFi');
-            console.log('   2. Open browser on that device');
-            console.log('   3. Go to: http://' + networkAddresses[0].address + ':' + PORT);
-            console.log('   4. Login with your credentials');
-        } else {
-            logger.warn('No network interfaces found! Make sure you are connected to WiFi or Ethernet.');
-        }
-        
-        console.log('\n' + '='.repeat(60));
         logger.success('Server is ready! Press Ctrl+C to stop.\n');
     });
 }).catch((error) => {
