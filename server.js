@@ -208,17 +208,6 @@ function getNetworkAddresses() {
     return addresses;
 }
 
-// Override database config untuk Railway MYSQL_URL
-if (process.env.MYSQL_URL) {
-    logger.info('Using MYSQL_URL from Railway environment');
-    config.database.dbConfig = {
-        connectionString: process.env.MYSQL_URL,
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0
-    };
-}
-
 // Test database connection before starting server
 config.database.testConnection().then(async (connected) => {
     if (!connected) {
@@ -246,7 +235,14 @@ config.database.testConnection().then(async (connected) => {
         logger.success(`Server running on port ${PORT}`);
         logger.info(`Started at: ${new Date().toLocaleString('id-ID')}`);
         logger.info(`Environment: ${config.server.env}`);
-        logger.info(`Database: ${config.database.dbConfig.database || 'railway'}`);
+        
+        // Show database info
+        if (process.env.MYSQL_URL) {
+            logger.info('Database: Railway MySQL');
+        } else {
+            logger.info(`Database: ${config.database.dbConfig.database || 'factory_inventory'}`);
+        }
+        
         console.log('='.repeat(60));
         
         // Local access
