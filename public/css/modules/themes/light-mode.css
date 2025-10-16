@@ -1,0 +1,432 @@
+/**
+ * Modern Light Mode Theme CSS
+ * Contemporary Design System - Sophisticated & Professional
+ * Enhanced UI with modern color palette and visual effects
+ */
+
+/* Modern Light Mode Root Variables */
+:root {
+    /* ========== Primary Colors (Modern Blue-Gray Palette) ========== */
+    --primary: #2563eb; /* Modern blue */
+    --primary-light: #3b82f6; /* Lighter blue */
+    --primary-dark: #1d4ed8; /* Darker blue */
+    --primary-hover: #1e40af; /* Hover blue */
+
+    /* ========== Secondary Colors (Warm Gray) ========== */
+    --secondary: #64748b; /* Slate gray */
+    --secondary-light: #94a3b8; /* Light slate */
+    --secondary-dark: #475569; /* Dark slate */
+
+    /* ========== Accent Colors (Modern Palette) ========== */
+    --accent: #8b5cf6; /* Purple accent */
+    --accent-light: #a78bfa; /* Light purple */
+    --accent-dark: #7c3aed; /* Dark purple */
+
+    /* ========== Status Colors (Refined) ========== */
+    --success: #059669; /* Emerald */
+    --success-light: #10b981; /* Light emerald */
+    --success-dark: #047857; /* Dark emerald */
+
+    --warning: #d97706; /* Amber */
+    --warning-light: #f59e0b; /* Light amber */
+    --warning-dark: #b45309; /* Dark amber */
+
+    --danger: #dc2626; /* Red */
+    --danger-light: #ef4444; /* Light red */
+    --danger-dark: #b91c1c; /* Dark red */
+
+    --info: #0891b2; /* Cyan */
+    --info-light: #06b6d4; /* Light cyan */
+    --info-dark: #0e7490; /* Dark cyan */
+
+    /* ========== Opacity/RGBA Colors ========== */
+    --primary-rgb: 37, 99, 235;
+    --success-rgb: 5, 150, 105;
+    --warning-rgb: 217, 119, 6;
+    --danger-rgb: 220, 38, 38;
+    --info-rgb: 8, 145, 178;
+    --accent-rgb: 139, 92, 246;
+
+    --primary-opacity-5: rgba(37, 99, 235, 0.05);
+    --primary-opacity-10: rgba(37, 99, 235, 0.1);
+    --primary-opacity-20: rgba(37, 99, 235, 0.2);
+    --success-opacity-10: rgba(5, 150, 105, 0.1);
+    --warning-opacity-10: rgba(217, 119, 6, 0.1);
+    --danger-opacity-10: rgba(220, 38, 38, 0.1);
+    --info-opacity-10: rgba(8, 145, 178, 0.1);
+    --accent-opacity-10: rgba(139, 92, 246, 0.1);
+
+    /* ========== Neutral Colors (Sophisticated Gray Scale) ========== */
+    --white: #ffffff;
+    --gray-25: #fcfcfd;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --black: #000000;
+
+    /* ========== Background Colors ========== */
+    --bg-primary: var(--white);
+    --bg-secondary: var(--gray-50);
+    --bg-tertiary: var(--gray-100);
+    --bg-overlay: rgba(15, 23, 42, 0.6);
+    --bg-glass: rgba(255, 255, 255, 0.8);
+    --bg-glass-dark: rgba(15, 23, 42, 0.8);
+
+    /* ========== Text Colors ========== */
+    --text-primary: var(--gray-900);
+    --text-secondary: var(--gray-600);
+    --text-tertiary: var(--gray-500);
+    --text-inverse: var(--white);
+    --text-muted: var(--gray-400);
+
+    /* ========== Border Colors ========== */
+    --border: var(--gray-200);
+    --border-light: var(--gray-100);
+    --border-dark: var(--gray-300);
+    --border-focus: var(--primary);
+
+    /* ========== Shadow System ========== */
+    --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgba(15, 23, 42, 0.06);
+    --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.3);
+
+    /* ========== Gradient System ========== */
+    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    --gradient-success: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%);
+    --gradient-warning: linear-gradient(135deg, var(--warning) 0%, var(--warning-light) 100%);
+    --gradient-danger: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    --gradient-subtle: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+
+    /* ========== Animation System ========== */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* ========== Z-Index Scale ========== */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
+    --dark: #7f1d1d; /* Merah sangat gelap */
+    --gray: #64748b;
+    --gray-light: #cbd5e1;
+    --gray-dark: #475569;
+    
+    --light: #fef2f2; /* Putih dengan sentuhan merah muda */
+    --light-hover: #fecaca; /* Merah muda untuk hover */
+    
+    --white: #ffffff;
+    --black: #000000;
+    
+    /* ========== Backgrounds (Light Mode) ========== */
+    --bg-primary: #ffffff; /* Putih bersih untuk latar utama */
+    --bg-secondary: #fef2f2; /* Putih dengan sentuhan merah muda */
+    --bg-tertiary: #fee2e2; /* Merah muda sangat muda */
+    
+    /* ========== Text Colors (Light Mode) ========== */
+    --text-primary: #7f1d1d; /* Merah sangat gelap untuk teks utama */
+    --text-secondary: #991b1b; /* Merah gelap untuk teks sekunder */
+    --text-muted: #b91c1c; /* Merah sedang untuk teks samar */
+    
+    /* ========== Borders (Light Mode) ========== */
+    --border: #fecaca; /* Merah muda untuk border */
+    --border-dark: #f87171; /* Merah terang untuk border gelap */
+    
+    /* ========== Shadows (Light Mode - dengan tint merah) ========== */
+    --shadow-none: none;
+    --shadow-xs: 0 1px 2px 0 rgba(220, 38, 38, 0.1);
+    --shadow-sm: 0 1px 2px 0 rgba(220, 38, 38, 0.1);
+    --shadow: 0 1px 3px 0 rgba(220, 38, 38, 0.2), 0 1px 2px 0 rgba(220, 38, 38, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(220, 38, 38, 0.2), 0 2px 4px -1px rgba(220, 38, 38, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(220, 38, 38, 0.2), 0 4px 6px -2px rgba(220, 38, 38, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(220, 38, 38, 0.2), 0 10px 10px -5px rgba(220, 38, 38, 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgba(220, 38, 38, 0.3);
+    --shadow-inner: inset 0 2px 4px 0 rgba(220, 38, 38, 0.1);
+}
+
+/* ========== Light Mode Specific Component Overrides ========== */
+
+/* Sidebar Light Mode */
+.sidebar {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+    box-shadow: var(--shadow-lg);
+}
+
+.sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-item {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-item:hover {
+    background-color: var(--primary-opacity-10);
+    color: var(--white);
+}
+
+.nav-item.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--white);
+}
+
+/* Topbar Light Mode */
+.topbar {
+    background-color: var(--white);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Cards Light Mode */
+.card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Stat Cards Light Mode */
+.stat-card {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-card::before {
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+/* Tables Light Mode */
+.table {
+    background-color: var(--bg-primary);
+}
+
+.table thead {
+    background-color: var(--bg-secondary);
+    border-bottom: 2px solid var(--border);
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--border);
+}
+
+.table tbody tr:hover {
+    background-color: var(--bg-secondary);
+}
+
+/* Buttons Light Mode */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-hover) 100%);
+    box-shadow: var(--shadow-md);
+}
+
+/* Forms Light Mode */
+.form-control {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-opacity-10);
+}
+
+/* Badges Light Mode */
+.badge-primary {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.badge-status.badge-success {
+    background-color: var(--success-opacity-10);
+    color: var(--success-dark);
+}
+
+.badge-status.badge-warning {
+    background-color: var(--warning-opacity-10);
+    color: var(--warning-dark);
+}
+
+.badge-status.badge-danger {
+    background-color: var(--danger-opacity-10);
+    color: var(--danger-dark);
+}
+
+/* Alerts Light Mode */
+.alert {
+    border: 1px solid var(--border);
+    background-color: var(--bg-secondary);
+}
+
+.alert-primary {
+    background-color: var(--primary-opacity-10);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+.alert-success {
+    background-color: var(--success-opacity-10);
+    border-color: var(--success);
+    color: var(--success-dark);
+}
+
+.alert-warning {
+    background-color: var(--warning-opacity-10);
+    border-color: var(--warning);
+    color: var(--warning-dark);
+}
+
+.alert-danger {
+    background-color: var(--danger-opacity-10);
+    border-color: var(--danger);
+    color: var(--danger-dark);
+}
+
+/* Modals Light Mode */
+.modal {
+    background-color: rgba(127, 29, 29, 0.5); /* Dark red overlay */
+}
+
+.modal-content {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-2xl);
+}
+
+.modal-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Dropdowns Light Mode */
+.dropdown-menu {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-secondary);
+    color: var(--primary);
+}
+
+/* Pagination Light Mode */
+.pagination .page-link {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+}
+
+/* Progress Bars Light Mode */
+.progress {
+    background-color: var(--bg-tertiary);
+}
+
+.progress-bar {
+    background-color: var(--primary);
+}
+
+/* Tooltips Light Mode */
+.tooltip {
+    background-color: var(--dark);
+    color: var(--white);
+    box-shadow: var(--shadow-md);
+}
+
+/* Tabs Light Mode */
+.nav-tabs {
+    border-bottom: 2px solid var(--border);
+}
+
+.nav-tabs .nav-link {
+    color: var(--text-secondary);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary);
+    border-color: var(--border);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary);
+    background-color: var(--bg-primary);
+    border-color: var(--border) var(--border) transparent;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* ========== Light Mode Media Queries ========== */
+
+/* Optional: Auto light mode based on system preference */
+@media (prefers-color-scheme: light) {
+    :root {
+        /* Ensure light mode colors */
+        --bg-primary: #ffffff;
+        --bg-secondary: #fef2f2;
+        --bg-tertiary: #fee2e2;
+        --text-primary: #7f1d1d;
+        --text-secondary: #991b1b;
+        --border: #fecaca;
+    }
+}
+
+/* ========== Print Styles ========== */
+@media print {
+    :root {
+        /* Optimize for printing */
+        --bg-primary: #ffffff;
+        --bg-secondary: #ffffff;
+        --text-primary: #000000;
+        --text-secondary: #333333;
+        --border: #cccccc;
+        --shadow: none;
+        --shadow-sm: none;
+        --shadow-md: none;
+        --shadow-lg: none;
+    }
+}

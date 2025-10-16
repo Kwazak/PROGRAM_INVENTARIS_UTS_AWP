@@ -1,0 +1,464 @@
+/**
+ * Main Content Area Styles
+ * Primary content container layout
+ */
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    transition: margin-left var(--transition-base);
+    padding-top: var(--topbar-height);
+}
+
+/* Content Wrapper - Inner padding with design system spacing */
+.content-wrapper {
+    padding: var(--space-6); /* 24px - responsive */
+    max-width: var(--container-2xl);
+    margin: 0 auto;
+}
+
+/* Container */
+.container {
+    padding: var(--space-6);
+    max-width: var(--container-xl);
+    margin: 0 auto;
+}
+
+.container-fluid {
+    padding: var(--space-6);
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Page Header - Improved hierarchy */
+.page-header {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: var(--border-width-1) solid var(--border);
+}
+
+.page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.page-header h1 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    line-height: var(--leading-tight);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.page-header-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.breadcrumb {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: var(--text-sm);
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: '/';
+    padding: 0 var(--space-2);
+    color: var(--text-muted);
+}
+
+.breadcrumb-item a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition-colors);
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-muted);
+    font-weight: var(--font-medium);
+}
+
+/* Content Sections */
+.content-section {
+    margin-bottom: var(--space-8);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-snug);
+    color: var(--text-primary);
+}
+
+.section-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+/* Grid Layout - Modern CSS Grid */
+.row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.col {
+    grid-column: span 12;
+}
+
+.col-12 { grid-column: span 12; }
+.col-11 { grid-column: span 11; }
+.col-10 { grid-column: span 10; }
+.col-9 { grid-column: span 9; }
+.col-8 { grid-column: span 8; }
+.col-7 { grid-column: span 7; }
+.col-6 { grid-column: span 6; }
+.col-5 { grid-column: span 5; }
+.col-4 { grid-column: span 4; }
+.col-3 { grid-column: span 3; }
+.col-2 { grid-column: span 2; }
+.col-1 { grid-column: span 1; }
+
+/* Collapsed Sidebar State */
+.sidebar.collapsed ~ .main-content {
+    margin-left: var(--sidebar-width-collapsed);
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Large Desktop (1280px+) */
+@media (min-width: 1280px) {
+    .content-wrapper {
+        padding: var(--space-8);
+    }
+}
+
+/* Desktop/Tablet (1024px - 1279px) */
+@media (max-width: 1279px) {
+    .col-lg-12 { grid-column: span 12; }
+    .col-lg-6 { grid-column: span 6; }
+    .col-lg-4 { grid-column: span 4; }
+    .col-lg-3 { grid-column: span 3; }
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .main-content {
+        margin-left: 0;
+        padding-top: var(--topbar-height-mobile);
+    }
+
+    .content-wrapper {
+        padding: var(--space-4);
+    }
+
+    .container,
+    .container-fluid {
+        padding: var(--space-4);
+    }
+
+    .col-md-12 { grid-column: span 12; }
+    .col-md-6 { grid-column: span 6; }
+    .col-md-4 { grid-column: span 4; }
+    
+    .page-header h1 {
+        font-size: var(--text-2xl);
+    }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+    .content-wrapper {
+        padding: var(--space-3);
+    }
+    
+    .container,
+    .container-fluid {
+        padding: var(--space-3);
+    }
+    
+    .page-header {
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-4);
+    }
+    
+    .page-header h1 {
+        font-size: var(--text-xl);
+    }
+    
+    .page-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+    
+    .page-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .row {
+        gap: var(--space-4);
+    }
+    
+    /* All columns full width on mobile */
+    .col,
+    [class*="col-"] {
+        grid-column: span 12;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+    
+    .section-actions {
+        width: 100%;
+    }
+}
+
+/* Extra Small Mobile (< 576px) */
+@media (max-width: 575px) {
+    .content-wrapper {
+        padding: var(--space-2);
+    }
+    
+    .page-header h1 {
+        font-size: var(--text-lg);
+    }
+    
+    .row {
+        gap: var(--space-3);
+    }
+    
+    /* Responsive Grid for Extra Small */
+    .col-xs-12 { grid-column: span 12; }
+    .col-xs-6 { grid-column: span 6; }
+    .col-xs-4 { grid-column: span 4; }
+    .col-xs-3 { grid-column: span 3; }
+}
+
+/* Small Mobile (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .content-wrapper {
+        padding: var(--space-3);
+    }
+    
+    .page-header h1 {
+        font-size: var(--text-xl);
+    }
+    
+    .row {
+        gap: var(--space-4);
+    }
+    
+    /* Responsive Grid for Small */
+    .col-sm-12 { grid-column: span 12; }
+    .col-sm-6 { grid-column: span 6; }
+    .col-sm-4 { grid-column: span 4; }
+    .col-sm-3 { grid-column: span 3; }
+    .col-sm-2 { grid-column: span 2; }
+}
+
+/* ============================================
+   ENHANCED RESPONSIVENESS - ADDITIONAL BREAKPOINTS
+   ============================================ */
+
+/* Large Desktop (≥ 1440px) */
+@media (min-width: 1440px) {
+    .content-wrapper {
+        padding: var(--space-8);
+        max-width: var(--container-3xl, 1600px);
+    }
+
+    .container {
+        max-width: var(--container-2xl, 1400px);
+    }
+}
+
+/* Tablet Landscape (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .content-wrapper {
+        padding: var(--space-4);
+    }
+
+    .page-header-content {
+        gap: var(--space-3);
+    }
+
+    /* 2-column layout for tablets */
+    .row.tablet-2-col .col,
+    .row.tablet-2-col [class*="col-"] {
+        grid-column: span 6;
+    }
+
+    /* Single column for complex content */
+    .row.tablet-1-col .col,
+    .row.tablet-1-col [class*="col-"] {
+        grid-column: span 12;
+    }
+}
+
+/* Small Desktop (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .content-wrapper {
+        padding: var(--space-5);
+    }
+
+    /* Optimize for smaller desktop screens */
+    .page-header-content {
+        flex-wrap: wrap;
+    }
+}
+
+/* Desktop Large (≥ 1280px) - Remove content wrapper constraints */
+@media (min-width: 1280px) {
+    .content-wrapper {
+        padding: 0;
+        max-width: none;
+        margin: 0;
+    }
+
+    /* Allow content to use full width on large desktops */
+    .main-content {
+        padding: var(--space-6) var(--space-8);
+    }
+    
+    /* Responsive Grid for Large Desktop */
+    .col-xl-12 { grid-column: span 12; }
+    .col-xl-10 { grid-column: span 10; }
+    .col-xl-8 { grid-column: span 8; }
+    .col-xl-6 { grid-column: span 6; }
+    .col-xl-4 { grid-column: span 4; }
+    .col-xl-3 { grid-column: span 3; }
+    .col-xl-2 { grid-column: span 2; }
+}
+
+/* Extra Large Desktop (≥ 1440px) */
+@media (min-width: 1440px) {
+    .content-wrapper {
+        padding: var(--space-8);
+        max-width: var(--container-3xl, 1600px);
+    }
+
+    .container {
+        max-width: var(--container-2xl, 1400px);
+    }
+    
+    /* Responsive Grid for Extra Large Desktop */
+    .col-2xl-12 { grid-column: span 12; }
+    .col-2xl-10 { grid-column: span 10; }
+    .col-2xl-8 { grid-column: span 8; }
+    .col-2xl-6 { grid-column: span 6; }
+    .col-2xl-4 { grid-column: span 4; }
+    .col-2xl-3 { grid-column: span 3; }
+    .col-2xl-2 { grid-column: span 2; }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .btn:hover {
+        transform: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .nav-item:hover {
+        background: transparent;
+        transform: none;
+    }
+
+    /* Larger touch targets */
+    .btn {
+        min-height: 44px;
+        padding: 12px 16px;
+    }
+
+    .nav-item {
+        padding: 14px 20px;
+        margin: 2px 0;
+    }
+
+    /* Better spacing for touch */
+    .content-wrapper {
+        padding: var(--space-4);
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Sharper borders and shadows */
+    .card {
+        border-width: 0.5px;
+    }
+
+    .btn {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar,
+    .topbar,
+    .btn,
+    .breadcrumb {
+        display: none !important;
+    }
+
+    .content-wrapper {
+        padding: 0;
+    }
+
+    .card {
+        border: 1px solid #000;
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+    .table {
+        border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+        border: 1px solid #000;
+    }
+}

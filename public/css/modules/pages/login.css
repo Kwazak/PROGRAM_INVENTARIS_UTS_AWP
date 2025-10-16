@@ -1,0 +1,201 @@
+/**
+ * Login Page Styles
+ * Login and registration forms
+ */
+
+.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 450px;
+}
+
+.login-box {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header i {
+    font-size: 48px;
+    color: var(--primary);
+    margin-bottom: var(--spacing-md);
+    display: block;
+}
+
+.login-header h1 {
+    font-size: 24px;
+    margin-bottom: var(--spacing-xs);
+    color: var(--dark);
+}
+
+.login-header p {
+    color: var(--gray);
+    font-size: 14px;
+}
+
+.login-form {
+    margin-top: var(--spacing-lg);
+}
+
+.login-form .form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.login-form label i {
+    margin-right: var(--spacing-xs);
+    color: var(--gray);
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"],
+.login-form input[type="email"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    transition: all var(--transition-fast);
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Password Input with Toggle */
+.password-input {
+    position: relative;
+}
+
+.password-input input {
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+}
+
+.toggle-password:hover {
+    color: var(--primary);
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: var(--spacing-sm);
+    cursor: pointer;
+}
+
+/* Login Help */
+.login-help {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+}
+
+.login-help p {
+    margin-bottom: var(--spacing-sm);
+    font-size: 13px;
+}
+
+.link-primary {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.link-primary:hover {
+    text-decoration: underline;
+}
+
+/* Alert in Login */
+.login-box .alert {
+    margin-top: var(--spacing-lg);
+}
+
+/* Language Selector in Login */
+.login-language {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+}
+
+.login-language select {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .login-box {
+        padding: 30px 20px;
+    }
+    
+    .login-header h1 {
+        font-size: 20px;
+    }
+}
+
+/* Hidden helper */
+.hidden {
+    display: none !important;
+}
+
+/* Text utilities in login */
+.text-muted {
+    color: var(--gray) !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.mt-15 {
+    margin-top: 15px !important;
+}

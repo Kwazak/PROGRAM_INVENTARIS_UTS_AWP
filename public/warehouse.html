@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Locations - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item active">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse Locations</span>
+            </h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                
+                <button class="btn-icon" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Info Alert -->
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Warehouse Location Management</strong>
+                    <p>Current system uses free-text location codes (e.g., A-12, B-05, C-21). This page helps document and standardize your warehouse organization.</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-primary">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalLocations">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="warehouse.totalLocations">Total Locations</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="availableLocations">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="warehouse.available">Available</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-warning">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="occupiedLocations">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="warehouse.occupied">Occupied</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-info">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalSections">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="warehouse.sections">Sections</div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Quick Add Section -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-plus-circle"></i> <span data-i18n="warehouse.quickAdd">Quick Add Location</span></h2>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Location Code *</label>
+                        <input type="text" id="quickCode" class="form-control" placeholder="A-12">
+                    </div>
+                    <div class="form-group">
+                        <label>Section *</label>
+                        <input type="text" id="quickSection" class="form-control" placeholder="A">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="quickDesc" class="form-control" placeholder="Raw Materials Storage">
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary" onclick="quickAddLocation()">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters & Actions -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-filter"></i> <span data-i18n="warehouse.filtersActions">Filters & Actions</span></h2>
+                <button class="btn btn-primary" onclick="openAddLocationModal()">
+                    <i class="fas fa-plus"></i> <span data-i18n="warehouse.add">Add Detailed Location</span>
+                </button>
+            </div>
+            
+            <div class="filters-row">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" data-i18n-placeholder="warehouse.search" placeholder="Search location code..." class="search-input">
+                </div>
+                
+                <select id="sectionFilter" class="form-control" title="Filter by Section">
+                    <option value="" data-i18n="warehouse.allSections">All Sections</option>
+                </select>
+                
+                <select id="statusFilter" class="form-control" title="Filter by Status">
+                    <option value="" data-i18n="warehouse.allStatus">All Status</option>
+                    <option value="available" data-i18n="warehouse.available">Available</option>
+                    <option value="occupied" data-i18n="warehouse.occupied">Occupied</option>
+                    <option value="reserved" data-i18n="warehouse.reserved">Reserved</option>
+                    <option value="maintenance" data-i18n="warehouse.maintenance">Maintenance</option>
+                </select>
+                
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Locations Table -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> <span data-i18n="warehouse.list">Warehouse Locations</span></h2>
+                <div class="card-actions">
+                    <button class="btn btn-secondary" onclick="exportLocations()">
+                        <i class="fas fa-download"></i> <span data-i18n="app.export">Export CSV</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="warehouse.code">Location Code</th>
+                            <th data-i18n="warehouse.section">Section</th>
+                            <th data-i18n="warehouse.row">Row</th>
+                            <th data-i18n="warehouse.level">Level</th>
+                            <th data-i18n="warehouse.capacity">Capacity (m³)</th>
+                            <th data-i18n="warehouse.description">Description</th>
+                            <th data-i18n="app.status">Status</th>
+                            <th data-i18n="warehouse.lastUpdated">Last Updated</th>
+                            <th data-i18n="app.actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="locationsTableBody">
+                        <tr><td colspan="9" class="text-center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Current Inventory Locations -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-boxes"></i> <span data-i18n="warehouse.currentInventory">Current Inventory Locations</span></h2>
+                <p data-i18n="warehouse.inventoryDesc">Locations currently in use by raw materials inventory</p>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Material Code</th>
+                            <th>Material Name</th>
+                            <th>Location</th>
+                            <th>Quantity</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryLocationsBody">
+                        <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Location Modal -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Warehouse Location</h2>
+                <button class="close-btn" onclick="closeLocationModal()">&times;</button>
+            </div>
+            <form id="locationForm">
+                <input type="hidden" id="locationId">
+                
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Location Code *</label>
+                        <input type="text" id="locationCode" required class="form-control" placeholder="A-12">
+                        <small>Format: Section-Number (e.g., A-12, B-05, C-21)</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Section *</label>
+                            <input type="text" id="section" required class="form-control" placeholder="A">
+                        </div>
+                        <div class="form-group">
+                            <label>Row</label>
+                            <input type="text" id="row" class="form-control" placeholder="12">
+                        </div>
+                        <div class="form-group">
+                            <label>Level</label>
+                            <input type="text" id="level" class="form-control" placeholder="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Capacity (m³)</label>
+                            <input type="number" id="capacity" step="0.1" min="0" class="form-control" placeholder="10.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status *</label>
+                            <select id="status" required class="form-control" title="Select Status">
+                                <option value="available">Available</option>
+                                <option value="occupied">Occupied</option>
+                                <option value="reserved">Reserved</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="description" rows="2" class="form-control" placeholder="Raw materials storage area..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="notes" rows="2" class="form-control" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeLocationModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Location
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let locations = [];
+        let currentLocationId = null;
+
+        // Sample/mock data for demonstration (replace with actual backend when implemented)
+        const mockLocations = [
+            { id: 1, code: 'A-12', section: 'A', row: '12', level: '1', capacity: 15.5, description: 'Raw Materials - Leather', status: 'occupied', updated_at: new Date() },
+            { id: 2, code: 'A-13', section: 'A', row: '13', level: '1', capacity: 15.5, description: 'Raw Materials - Rubber', status: 'available', updated_at: new Date() },
+            { id: 3, code: 'B-05', section: 'B', row: '05', level: '2', capacity: 12.0, description: 'Finished Products', status: 'occupied', updated_at: new Date() },
+            { id: 4, code: 'C-21', section: 'C', row: '21', level: '1', capacity: 20.0, description: 'Packaging Materials', status: 'available', updated_at: new Date() },
+        ];
+
+        // Sidebar Toggle Function (SAME AS DASHBOARD)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        // Logout Function (SAME AS DASHBOARD)
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserInfo();
+            loadLocations();
+            loadInventoryLocations();
+        });
+
+        // Load user info
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('userName').textContent = user.full_name;
+                document.getElementById('userRole').textContent = user.role.replace('_', ' ').toUpperCase();
+            }
+        }
+
+        // Load warehouse locations (mock data for now)
+        async function loadLocations() {
+            try {
+                // TODO: Replace with actual API call when backend is implemented
+                // const response = await fetchAPI('/warehouse-locations');
+                
+                // Using mock data for demonstration
+                locations = mockLocations;
+                
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const section = document.getElementById('sectionFilter').value;
+                const status = document.getElementById('statusFilter').value;
+                
+                let filtered = locations.filter(loc => {
+                    const matchSearch = !search || loc.code.toLowerCase().includes(search);
+                    const matchSection = !section || loc.section === section;
+                    const matchStatus = !status || loc.status === status;
+                    return matchSearch && matchSection && matchStatus;
+                });
+                
+                displayLocations(filtered);
+                updateStats(locations);
+                loadSectionFilter(locations);
+            } catch (error) {
+                console.error('Error loading locations:', error);
+                showToast('Failed to load warehouse locations', 'error');
+            }
+        }
+
+        // Display locations
+        function displayLocations(locs) {
+            const tbody = document.getElementById('locationsTableBody');
+            
+            if (locs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center">No locations found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = locs.map(loc => `
+                <tr>
+                    <td><strong>${loc.code}</strong></td>
+                    <td>${loc.section}</td>
+                    <td>${loc.row || '-'}</td>
+                    <td>${loc.level || '-'}</td>
+                    <td>${loc.capacity ? loc.capacity + ' m³' : '-'}</td>
+                    <td>${loc.description || '-'}</td>
+                    <td>${getStatusBadge(loc.status)}</td>
+                    <td>${formatDate(loc.updated_at)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editLocation(${loc.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteLocation(${loc.id}, '${loc.code}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'available': '<span class="badge badge-success">Available</span>',
+                'occupied': '<span class="badge badge-warning">Occupied</span>',
+                'reserved': '<span class="badge badge-info">Reserved</span>',
+                'maintenance': '<span class="badge badge-secondary">Maintenance</span>'
+            };
+            return badges[status] || badges['available'];
+        }
+
+        // Format date
+        function formatDate(date) {
+            if (!date) return '-';
+            const d = new Date(date);
+            return d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Update statistics
+        function updateStats(locs) {
+            const available = locs.filter(l => l.status === 'available').length;
+            const occupied = locs.filter(l => l.status === 'occupied').length;
+            const sections = [...new Set(locs.map(l => l.section))].length;
+            
+            document.getElementById('totalLocations').textContent = locs.length;
+            document.getElementById('availableLocations').textContent = available;
+            document.getElementById('occupiedLocations').textContent = occupied;
+            document.getElementById('totalSections').textContent = sections;
+        }
+
+        // Load section filter
+        function loadSectionFilter(locs) {
+            const sections = [...new Set(locs.map(l => l.section))].sort();
+            const select = document.getElementById('sectionFilter');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">All Sections</option>' + 
+                sections.map(s => `<option value="${s}">Section ${s}</option>`).join('');
+            
+            if (currentValue) select.value = currentValue;
+        }
+
+        // Load inventory locations from raw materials
+        async function loadInventoryLocations() {
+            try {
+                const response = await fetchAPI('/materials');
+                
+                if (response.success) {
+                    const materials = response.data.filter(m => m.storage_location);
+                    displayInventoryLocations(materials);
+                }
+            } catch (error) {
+                console.error('Error loading inventory locations:', error);
+            }
+        }
+
+        // Display inventory locations
+        function displayInventoryLocations(materials) {
+            const tbody = document.getElementById('inventoryLocationsBody');
+            
+            if (materials.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No inventory with assigned locations</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = materials.map(m => `
+                <tr>
+                    <td><strong>${m.material_code || m.id}</strong></td>
+                    <td>${m.material_name}</td>
+                    <td><span class="badge badge-info">${m.warehouse_location}</span></td>
+                    <td>${m.quantity} ${m.unit}</td>
+                    <td>${formatDate(m.updated_at)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Search and filter
+        document.getElementById('searchInput').addEventListener('input', debounce(loadLocations, 300));
+        document.getElementById('sectionFilter').addEventListener('change', loadLocations);
+        document.getElementById('statusFilter').addEventListener('change', loadLocations);
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sectionFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            loadLocations();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // Quick add location
+        function quickAddLocation() {
+            const code = document.getElementById('quickCode').value.trim();
+            const section = document.getElementById('quickSection').value.trim();
+            const desc = document.getElementById('quickDesc').value.trim();
+            
+            if (!code || !section) {
+                showToast('Please fill Location Code and Section', 'error');
+                return;
+            }
+            
+            // Check if location already exists
+            if (locations.find(l => l.code.toLowerCase() === code.toLowerCase())) {
+                showToast('Location code already exists', 'error');
+                return;
+            }
+            
+            // Add new location
+            const newLocation = {
+                id: locations.length + 1,
+                code: code,
+                section: section,
+                row: code.split('-')[1] || '',
+                level: '1',
+                capacity: null,
+                description: desc,
+                status: 'available',
+                updated_at: new Date()
+            };
+            
+            locations.push(newLocation);
+            
+            // Clear form
+            document.getElementById('quickCode').value = '';
+            document.getElementById('quickSection').value = '';
+            document.getElementById('quickDesc').value = '';
+            
+            showToast('Location added successfully', 'success');
+            loadLocations();
+        }
+
+        // Open add location modal
+        function openAddLocationModal() {
+            currentLocationId = null;
+            document.getElementById('modalTitle').textContent = 'Add Warehouse Location';
+            document.getElementById('locationForm').reset();
+            document.getElementById('status').value = 'available';
+            document.getElementById('locationModal').style.display = 'flex';
+        }
+
+        function closeLocationModal() {
+            document.getElementById('locationModal').style.display = 'none';
+            currentLocationId = null;
+        }
+
+        // Edit location
+        function editLocation(id) {
+            const location = locations.find(l => l.id === id);
+            if (!location) return;
+            
+            currentLocationId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Warehouse Location';
+            document.getElementById('locationCode').value = location.code;
+            document.getElementById('section').value = location.section;
+            document.getElementById('row').value = location.row || '';
+            document.getElementById('level').value = location.level || '';
+            document.getElementById('capacity').value = location.capacity || '';
+            document.getElementById('status').value = location.status;
+            document.getElementById('description').value = location.description || '';
+            document.getElementById('notes').value = location.notes || '';
+            
+            document.getElementById('locationModal').style.display = 'flex';
+        }
+
+        // Save location
+        document.getElementById('locationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const locationData = {
+                code: document.getElementById('locationCode').value,
+                section: document.getElementById('section').value,
+                row: document.getElementById('row').value || null,
+                level: document.getElementById('level').value || null,
+                capacity: document.getElementById('capacity').value ? parseFloat(document.getElementById('capacity').value) : null,
+                status: document.getElementById('status').value,
+                description: document.getElementById('description').value || null,
+                notes: document.getElementById('notes').value || null,
+                updated_at: new Date()
+            };
+            
+            if (currentLocationId) {
+                // Update existing location
+                const index = locations.findIndex(l => l.id === currentLocationId);
+                if (index !== -1) {
+                    locations[index] = { ...locations[index], ...locationData };
+                    showToast('Location updated successfully', 'success');
+                }
+            } else {
+                // Add new location
+                locationData.id = locations.length + 1;
+                locations.push(locationData);
+                showToast('Location added successfully', 'success');
+            }
+            
+            closeLocationModal();
+            loadLocations();
+        });
+
+        // Delete location
+        function deleteLocation(id, code) {
+            if (!confirm(`Are you sure you want to delete location "${code}"?`)) {
+                return;
+            }
+            
+            const index = locations.findIndex(l => l.id === id);
+            if (index !== -1) {
+                locations.splice(index, 1);
+                showToast('Location deleted successfully', 'success');
+                loadLocations();
+            }
+        }
+
+        // Export locations to CSV
+        function exportLocations() {
+            let csv = 'Location Code,Section,Row,Level,Capacity (m³),Description,Status,Last Updated\n';
+            
+            locations.forEach(loc => {
+                csv += `"${loc.code}","${loc.section}","${loc.row || ''}","${loc.level || ''}","${loc.capacity || ''}","${loc.description || ''}","${loc.status}","${formatDate(loc.updated_at)}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `warehouse_locations_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showToast('Locations exported successfully', 'success');
+        }
+    </script>
+    <script src="/js/modules/loader.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/i18n.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+/**
+ * Utility Classes - Colors
+ * Background and text color utilities
+ */
+
+/* Background Colors - Solid */
+.bg-primary {
+    background-color: var(--primary) !important;
+    color: var(--white) !important;
+}
+
+.bg-secondary {
+    background-color: var(--secondary) !important;
+    color: var(--white) !important;
+}
+
+.bg-success {
+    background-color: var(--success) !important;
+    color: var(--white) !important;
+}
+
+.bg-warning {
+    background-color: var(--warning) !important;
+    color: var(--white) !important;
+}
+
+.bg-danger {
+    background-color: var(--danger) !important;
+    color: var(--white) !important;
+}
+
+.bg-info {
+    background-color: var(--info) !important;
+    color: var(--white) !important;
+}
+
+.bg-light {
+    background-color: var(--light) !important;
+    color: var(--dark) !important;
+}
+
+.bg-dark {
+    background-color: var(--dark) !important;
+    color: var(--white) !important;
+}
+
+.bg-white {
+    background-color: var(--white) !important;
+    color: var(--dark) !important;
+}
+
+/* Background Colors - Gradient (for stat icons, etc.) */
+.bg-gradient-primary,
+.bg-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+    color: var(--white) !important;
+}
+
+.bg-gradient-success,
+.bg-success {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%) !important;
+    color: var(--white) !important;
+}
+
+.bg-gradient-warning,
+.bg-warning {
+    background: linear-gradient(135deg, var(--warning) 0%, var(--warning-light) 100%) !important;
+    color: var(--white) !important;
+}
+
+.bg-gradient-danger,
+.bg-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%) !important;
+    color: var(--white) !important;
+}
+
+.bg-gradient-info,
+.bg-info {
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-light) 100%) !important;
+    color: var(--white) !important;
+}
+
+/* Background Colors - Light (for backgrounds) */
+.bg-primary-light {
+    background-color: var(--primary-opacity-10) !important;
+    color: var(--primary) !important;
+}
+
+.bg-success-light {
+    background-color: var(--success-opacity-10) !important;
+    color: var(--success) !important;
+}
+
+.bg-warning-light {
+    background-color: var(--warning-opacity-10) !important;
+    color: var(--warning) !important;
+}
+
+.bg-danger-light {
+    background-color: var(--danger-opacity-10) !important;
+    color: var(--danger) !important;
+}
+
+.bg-info-light {
+    background-color: var(--info-opacity-10) !important;
+    color: var(--info) !important;
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-secondary {
+    color: var(--secondary) !important;
+}
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-warning {
+    color: var(--warning) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-info {
+    color: var(--info) !important;
+}
+
+.text-light {
+    color: var(--light) !important;
+}
+
+.text-dark {
+    color: var(--dark) !important;
+}
+
+.text-white {
+    color: var(--white) !important;
+}
+
+.text-gray {
+    color: var(--gray) !important;
+}
+
+.text-muted {
+    color: var(--gray) !important;
+    opacity: 0.7;
+}
+
+/* Border Colors */
+.border-primary {
+    border-color: var(--primary) !important;
+}
+
+.border-success {
+    border-color: var(--success) !important;
+}
+
+.border-warning {
+    border-color: var(--warning) !important;
+}
+
+.border-danger {
+    border-color: var(--danger) !important;
+}
+
+.border-info {
+    border-color: var(--info) !important;
+}
+
+.border-light {
+    border-color: var(--light) !important;
+}
+
+.border-dark {
+    border-color: var(--dark) !important;
+}

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Management - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load config.js first for API_URL -->
+    <script src="/js/config.js"></script>
+</head>
+<body>
+    <!-- Sidebar (SAME AS DASHBOARD) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item active">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar (SAME AS DASHBOARD) -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </h1>
+            <div class="topbar-right">
+                <!-- Language Switcher (SAME AS DASHBOARD) -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                
+                <button class="btn-icon" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Info Banner -->
+            <div class="alert alert-info info-alert-custom">
+                <i class="fas fa-info-circle info-icon"></i>
+                <strong>Important:</strong> Ketika Anda mengubah permissions untuk role, user yang sudah login dengan role tersebut 
+                <strong>HARUS LOGOUT dan LOGIN ULANG</strong> untuk apply permissions baru. 
+                Permissions tersimpan di JWT token yang di-generate saat login.
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openCreateRoleModal()">
+                    <i class="fas fa-plus"></i> Create New Role
+                </button>
+                <button class="btn btn-secondary" onclick="refreshRoleList()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+
+            <!-- Roles Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-users-cog"></i> Roles Management
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-tag"></i> Name</th>
+                                <th><i class="fas fa-align-left"></i> Description</th>
+                                <th><i class="fas fa-layer-group"></i> Type</th>
+                                <th><i class="fas fa-shield-alt"></i> Permissions</th>
+                                <th><i class="fas fa-users"></i> Users</th>
+                                <th><i class="fas fa-toggle-on"></i> Status</th>
+                                <th><i class="fas fa-cog"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rolesTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading roles...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Role Modal -->
+    <div id="roleModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="modalTitle">
+                    <i class="fas fa-plus"></i> Create New Role
+                </h2>
+                <button class="close-btn" onclick="closeRoleModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="roleForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roleName">Role Name <span class="required">*</span></label>
+                            <input type="text" id="roleName" required placeholder="e.g. Production Manager">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="roleDescription">Description</label>
+                        <textarea id="roleDescription" placeholder="Describe this role's purpose and responsibilities"></textarea>
+                    </div>
+                    
+                    <h3 class="permissions-heading">
+                        <i class="fas fa-shield-alt"></i> Permissions
+                    </h3>
+                    <div id="permissionsContainer" class="permissions-grid">
+                        <div class="text-center loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i> Loading permissions...
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeRoleModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" form="roleForm" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Role
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script>
+        // API_URL is now loaded from config.js (dynamic based on hostname)
+        const token = localStorage.getItem('token');
+        let currentRoleId = null;
+        let allPermissions = [];
+        
+        // Performance monitoring
+        const pageLoadTime = performance.now();
+        console.log('Page loaded in ' + pageLoadTime.toFixed(2) + 'ms');
+        
+        // Check authentication
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        // Sidebar Toggle Function (SAME AS DASHBOARD)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+        
+        // Logout Function (SAME AS DASHBOARD)
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login.html';
+            }
+        }
+        
+        // Load user info (SAME AS DASHBOARD)
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('userName').textContent = user.username || 'User';
+            document.getElementById('userRole').textContent = user.role || 'Admin';
+        }
+        
+        // Load roles on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadRoles();
+            loadPermissions();
+            
+            // Initialize i18n
+            i18n.init();
+            
+            // Setup form submit
+            document.getElementById('roleForm').addEventListener('submit', handleRoleSubmit);
+        });
+        
+        async function loadRoles() {
+            try {
+                const response = await fetch(`${API_URL}/roles`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayRoles(result.data);
+                } else {
+                    alert('Error loading roles: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to load roles');
+            }
+        }
+        
+        function displayRoles(roles) {
+            const tbody = document.getElementById('rolesTableBody');
+            
+            if (roles.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No roles found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = roles.map(role => `
+                <tr>
+                    <td><strong>${role.name}</strong></td>
+                    <td>${role.description || '-'}</td>
+                    <td>
+                        <span class="badge ${role.is_system ? 'badge-system' : 'badge-custom'}">
+                            ${role.is_system ? '🔒 System' : '📝 Custom'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge badge-primary">
+                            <i class="fas fa-shield-alt"></i> ${role.permission_count}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge badge-info">
+                            <i class="fas fa-users"></i> ${role.user_count}
+                        </span>
+                    </td>
+                    <td><span class="badge ${role.is_active ? 'badge-success' : 'badge-danger'}">${role.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="viewRole(${role.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="editRole(${role.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        ${!role.is_system ? `
+                            <button class="btn btn-sm btn-danger" onclick="deleteRole(${role.id}, '${role.name}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-sm btn-secondary" onclick="cloneRole(${role.id})">
+                            <i class="fas fa-copy"></i> Clone
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        async function loadPermissions() {
+            try {
+                const response = await fetch(`${API_URL}/permissions/by-module`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    allPermissions = result.data;
+                }
+            } catch (error) {
+                console.error('Error loading permissions:', error);
+            }
+        }
+        
+        function openCreateRoleModal() {
+            currentRoleId = null;
+            document.getElementById('modalTitle').textContent = 'Create New Role';
+            document.getElementById('roleName').value = '';
+            document.getElementById('roleDescription').value = '';
+            displayPermissionsForm([]);
+            document.getElementById('roleModal').style.display = 'block';
+        }
+        
+        function closeRoleModal() {
+            document.getElementById('roleModal').style.display = 'none';
+        }
+        
+        function displayPermissionsForm(selectedPermissions) {
+            const container = document.getElementById('permissionsContainer');
+            
+            const moduleIcons = {
+                'dashboard': 'fas fa-tachometer-alt',
+                'users': 'fas fa-users',
+                'roles': 'fas fa-user-shield',
+                'inventory': 'fas fa-boxes',
+                'products': 'fas fa-box-open',
+                'production': 'fas fa-industry',
+                'sales_orders': 'fas fa-shopping-cart',
+                'purchase_orders': 'fas fa-shopping-bag',
+                'suppliers': 'fas fa-truck',
+                'customers': 'fas fa-user-friends',
+                'warehouse': 'fas fa-warehouse',
+                'reports': 'fas fa-chart-bar',
+                'settings': 'fas fa-cog'
+            };
+            
+            container.innerHTML = allPermissions.map(module => `
+                <div class="permission-module">
+                    <div class="module-header">
+                        <h4>
+                            <i class="${moduleIcons[module.module] || 'fas fa-folder'}"></i>
+                            ${module.module.replace(/_/g, ' ').toUpperCase()}
+                        </h4>
+                        <span class="select-all-module" onclick="toggleModulePermissions('${module.module}')">
+                            <i class="fas fa-check-double"></i> Select All
+                        </span>
+                    </div>
+                    ${module.permissions.map(perm => `
+                        <div class="permission-item">
+                            <label>
+                                <input type="checkbox" 
+                                       name="permissions" 
+                                       value="${perm.id}"
+                                       data-module="${module.module}"
+                                       ${selectedPermissions.includes(perm.id) ? 'checked' : ''}>
+                                <span><strong>${perm.action}</strong>: ${perm.resource}</span>
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+        
+        function toggleModulePermissions(moduleName) {
+            const checkboxes = document.querySelectorAll(`input[data-module="${moduleName}"]`);
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+        }
+        
+        async function handleRoleSubmit(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('roleName').value;
+            const description = document.getElementById('roleDescription').value;
+            const permissionIds = Array.from(document.querySelectorAll('input[name="permissions"]:checked'))
+                .map(cb => parseInt(cb.value));
+            
+            if (permissionIds.length === 0) {
+                alert('Please select at least 1 permission');
+                return;
+            }
+            
+            const data = {
+                name,
+                description,
+                permission_ids: permissionIds
+            };
+            
+            try {
+                const url = currentRoleId ? `${API_URL}/roles/${currentRoleId}` : `${API_URL}/roles`;
+                const method = currentRoleId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    let message = result.message;
+                    
+                    // Add warning if there are affected users
+                    if (result.warning) {
+                        message += '\n\n⚠️ PENTING:\n' + result.warning;
+                    }
+                    
+                    // Show stats if available
+                    if (result.stats) {
+                        message += '\n\n📊 Stats:';
+                        message += `\n• Added: ${result.stats.added} permissions`;
+                        message += `\n• Removed: ${result.stats.removed} permissions`;
+                        message += `\n• Total: ${result.stats.total} permissions`;
+                        if (result.stats.affected_users) {
+                            message += `\n• Affected users: ${result.stats.affected_users}`;
+                        }
+                    }
+                    
+                    alert(message);
+                    closeRoleModal();
+                    loadRoles();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to save role');
+            }
+        }
+        
+        async function viewRole(roleId) {
+            try {
+                const response = await fetch(`${API_URL}/roles/${roleId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const role = result.data;
+                    let details = `Name: ${role.name}\n`;
+                    details += `Description: ${role.description || '-'}\n`;
+                    details += `Type: ${role.is_system ? 'System Role' : 'Custom Role'}\n`;
+                    details += `Permissions: ${role.permission_count}\n`;
+                    details += `Users: ${role.user_count}\n\n`;
+                    details += `Permissions List:\n`;
+                    role.permissions.forEach(p => {
+                        details += `- ${p.module}.${p.action}.${p.resource}\n`;
+                    });
+                    
+                    alert(details);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function editRole(roleId) {
+            try {
+                const response = await fetch(`${API_URL}/roles/${roleId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const role = result.data;
+                    currentRoleId = roleId;
+                    document.getElementById('modalTitle').textContent = 'Edit Role';
+                    document.getElementById('roleName').value = role.name;
+                    document.getElementById('roleDescription').value = role.description || '';
+                    displayPermissionsForm(role.permissions.map(p => p.id));
+                    document.getElementById('roleModal').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function deleteRole(roleId, roleName) {
+            if (!confirm(`Are you sure you want to delete role "${roleName}"?\n\nUsers with this role must be reassigned.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/roles/${roleId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    loadRoles();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to delete role');
+            }
+        }
+        
+        async function cloneRole(roleId) {
+            const newName = prompt('Enter name for cloned role:');
+            if (!newName) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/roles/${roleId}/clone`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    loadRoles();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to clone role');
+            }
+        }
+        
+        function refreshRoleList() {
+            loadRoles();
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script src="/js/modules/loader.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/roles-optimization.js"></script>
+</body>
+</html>

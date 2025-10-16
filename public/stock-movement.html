@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Movement - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Print Styles - Only show table */
+        @media print {
+            /* Hide everything except table */
+            .sidebar,
+            .topbar,
+            .action-bar,
+            .filters-card,
+            .card-header,
+            .modal,
+            button {
+                display: none !important;
+            }
+            
+            /* Show only table */
+            .content-wrapper {
+                margin: 0 !important;
+                padding: 20px !important;
+            }
+            
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+            }
+            
+            .card-body {
+                padding: 0 !important;
+            }
+            
+            /* Table styling for print */
+            .table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            
+            .table th,
+            .table td {
+                border: 1px solid #000 !important;
+                padding: 8px !important;
+                font-size: 10pt !important;
+            }
+            
+            .table thead {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Add header */
+            @page {
+                margin: 1cm;
+            }
+            
+            .table::before {
+                content: "Stock Movement Report";
+                display: block;
+                text-align: center;
+                font-size: 18pt;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" data-i18n="nav.stockMovement">Stock Movement</h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh" onclick="i18n.setLanguage('zh')" title="中文">
+                        <span class="flag">🇨🇳</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                
+                <button class="btn-icon" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <div class="filter-buttons">
+                    <button class="btn btn-success" onclick="showStockInModal()">
+                        <i class="fas fa-arrow-down"></i>
+                        <span data-i18n="stockMovement.stockIn">Stock In</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="showStockOutModal()">
+                        <i class="fas fa-arrow-up"></i>
+                        <span data-i18n="stockMovement.stockOut">Stock Out</span>
+                    </button>
+                </div>
+                <div class="export-buttons">
+                    <button class="btn btn-info" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i>
+                        <span data-i18n="app.export">Export</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.print()">
+                        <i class="fas fa-print"></i>
+                        <span data-i18n="stockMovement.print">Print</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.location.href='/inventory.html'">
+                        <i class="fas fa-arrow-left"></i>
+                        <span data-i18n="stockMovement.backToMaterials">Kembali ke Bahan Baku</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters Card -->
+            <div class="card filters-card">
+                <div class="card-body">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Cari material..." data-i18n-placeholder="stockMovement.searchMaterial">
+                        </div>
+                        <div class="form-group">
+                            <select id="typeFilter" class="form-control" title="Filter Tipe Stock">
+                                <option value="" data-i18n="stockMovement.allTypes">Semua Tipe</option>
+                                <option value="in" data-i18n="stockMovement.stockIn">Stock In</option>
+                                <option value="out" data-i18n="stockMovement.stockOut">Stock Out</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="startDate" class="form-control" title="Tanggal Mulai" placeholder="Tanggal Mulai">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" id="endDate" class="form-control" title="Tanggal Akhir" placeholder="Tanggal Akhir">
+                        </div>
+                        <button class="btn btn-primary" onclick="loadMovements()">
+                            <i class="fas fa-search"></i>
+                            <span data-i18n="common.filter">Filter</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Movements Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-exchange-alt"></i>
+                        <span data-i18n="stockMovement.historyTitle">Riwayat Stock Movement</span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('movement_date')" class="sortable-header" title="Klik untuk urutkan">
+                                        <span data-i18n="common.date">Tanggal</span>
+                                        <i class="fas fa-sort" id="sort_movement_date"></i>
+                                    </th>
+                                    <th onclick="sortTable('material_name')" class="sortable-header" title="Klik untuk urutkan">
+                                        <span data-i18n="common.material">Material</span>
+                                        <i class="fas fa-sort" id="sort_material_name"></i>
+                                    </th>
+                                    <th onclick="sortTable('movement_type')" class="sortable-header" title="Klik untuk urutkan">
+                                        <span data-i18n="common.type">Tipe</span>
+                                        <i class="fas fa-sort" id="sort_movement_type"></i>
+                                    </th>
+                                    <th onclick="sortTable('quantity')" class="sortable-header" title="Klik untuk urutkan">
+                                        <span data-i18n="common.quantity">Quantity</span>
+                                        <i class="fas fa-sort" id="sort_quantity"></i>
+                                    </th>
+                                    <th data-i18n="common.unit">Unit</th>
+                                    <th data-i18n="common.reference">Reference</th>
+                                    <th data-i18n="common.notes">Notes</th>
+                                    <th onclick="sortTable('user_name')" class="sortable-header" title="Klik untuk urutkan">
+                                        <span data-i18n="common.user">User</span>
+                                        <i class="fas fa-sort" id="sort_user_name"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="movementsTable">
+                                <tr><td colspan="8" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock In Modal -->
+    <div id="stockInModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-arrow-down"></i>
+                    <span data-i18n="stockMovement.stockInTitle">Stock In - Masuk Barang</span>
+                </h2>
+                <span class="close-btn" onclick="closeStockInModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="stockInForm">
+                    <div class="form-group">
+                        <label for="in_material_id">
+                            <span data-i18n="common.material">Material</span>
+                            <span class="required">*</span>
+                        </label>
+                        <select id="in_material_id" class="form-control" required onchange="updateMaterialInfo('in')" title="Pilih Material">
+                            <option value="" data-i18n="common.selectMaterial">Pilih Material</option>
+                        </select>
+                    </div>
+                    
+                    <div id="inMaterialInfo" class="material-info hidden">
+                        <div class="info-grid">
+                            <div>
+                                <strong data-i18n="stockMovement.currentStock">Stock Saat Ini:</strong>
+                                <span id="in_current_stock">-</span>
+                            </div>
+                            <div>
+                                <strong data-i18n="common.unit">Unit:</strong>
+                                <span id="in_unit">-</span>
+                            </div>
+                            <div>
+                                <strong data-i18n="stockMovement.minStock">Min Stock:</strong>
+                                <span id="in_min_stock">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <span data-i18n="common.quantity">Quantity</span>
+                                <span class="required">*</span>
+                            </label>
+                            <input type="number" id="in_quantity" class="form-control" step="0.01" required placeholder="0" min="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="in_date">
+                                <span data-i18n="common.date">Tanggal</span>
+                                <span class="required">*</span>
+                            </label>
+                            <input type="date" id="in_date" class="form-control" required title="Tanggal Stock In">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="stockMovement.referenceNumber">Reference Number</label>
+                        <input type="text" id="in_reference" class="form-control" placeholder="PO Number, Invoice, dll">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="common.notes">Notes</label>
+                        <textarea id="in_notes" class="form-control" rows="3" placeholder="Catatan tambahan (optional)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="saveStockIn()">
+                    <i class="fas fa-save"></i>
+                    <span data-i18n="stockMovement.saveStockIn">Simpan Stock In</span>
+                </button>
+                <button class="btn btn-secondary" onclick="closeStockInModal()">
+                    <i class="fas fa-times"></i>
+                    <span data-i18n="common.cancel">Batal</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Out Modal -->
+    <div id="stockOutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-arrow-up"></i>
+                    <span data-i18n="stockMovement.stockOutTitle">Stock Out - Keluar Barang</span>
+                </h2>
+                <span class="close-btn" onclick="closeStockOutModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="stockOutForm">
+                    <div class="form-group">
+                        <label for="out_material_id">
+                            <span data-i18n="common.material">Material</span>
+                            <span class="required">*</span>
+                        </label>
+                        <select id="out_material_id" class="form-control" required onchange="updateMaterialInfo('out')" title="Pilih Material">
+                            <option value="" data-i18n="common.selectMaterial">Pilih Material</option>
+                        </select>
+                    </div>
+                    
+                    <div id="outMaterialInfo" class="material-info hidden">
+                        <div class="info-grid">
+                            <div>
+                                <strong data-i18n="stockMovement.currentStock">Stock Saat Ini:</strong>
+                                <span id="out_current_stock">-</span>
+                            </div>
+                            <div>
+                                <strong data-i18n="common.unit">Unit:</strong>
+                                <span id="out_unit">-</span>
+                            </div>
+                            <div>
+                                <strong data-i18n="stockMovement.minStock">Min Stock:</strong>
+                                <span id="out_min_stock">-</span>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning" id="out_warning" class="hidden mt-10">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span id="out_warning_text"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <span data-i18n="common.quantity">Quantity</span>
+                                <span class="required">*</span>
+                            </label>
+                            <input type="number" id="out_quantity" class="form-control" step="0.01" required placeholder="0" min="0.01" oninput="checkStockOut()">
+                        </div>
+                        <div class="form-group">
+                            <label for="out_date">
+                                <span data-i18n="common.date">Tanggal</span>
+                                <span class="required">*</span>
+                            </label>
+                            <input type="date" id="out_date" class="form-control" required title="Tanggal Stock Out">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="stockMovement.referenceNumber">Reference Number</label>
+                        <input type="text" id="out_reference" class="form-control" placeholder="WO Number, SO Number, dll">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-i18n="common.notes">Notes</label>
+                        <textarea id="out_notes" class="form-control" rows="3" placeholder="Catatan tambahan (optional)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="saveStockOut()">
+                    <i class="fas fa-save"></i>
+                    <span data-i18n="stockMovement.saveStockOut">Simpan Stock Out</span>
+                </button>
+                <button class="btn btn-secondary" onclick="closeStockOutModal()">
+                    <i class="fas fa-times"></i>
+                    <span data-i18n="common.cancel">Batal</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        let allMaterials = [];
+        let currentMovements = [];
+        let sortColumn = 'movement_date';
+        let sortDirection = 'desc';
+
+        // Load user info
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('userName').textContent = user.full_name;
+                document.getElementById('userRole').textContent = user.role.replace('_', ' ').toUpperCase();
+            }
+        }
+
+        // Set default dates
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('in_date').value = today;
+            document.getElementById('out_date').value = today;
+            
+            // Set end date to today
+            document.getElementById('endDate').value = today;
+            
+            // Set start date to 30 days ago
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            document.getElementById('startDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+        }
+
+        // Load all materials for dropdowns (with caching)
+        async function loadMaterials(forceReload = false) {
+            try {
+                // Use cache if already loaded and not forced reload
+                if (allMaterials.length > 0 && !forceReload) {
+                    populateMaterialDropdowns();
+                    return;
+                }
+                
+                const response = await fetchAPI('/materials?status=active');
+                if (response && response.success) {
+                    allMaterials = response.data;
+                    populateMaterialDropdowns();
+                }
+            } catch (error) {
+                console.error('Error loading materials:', error);
+                showToast('Gagal memuat data material', 'error');
+            }
+        }
+        
+        // Populate material dropdowns from cache
+        function populateMaterialDropdowns() {
+            const inSelect = document.getElementById('in_material_id');
+            const outSelect = document.getElementById('out_material_id');
+            
+            const defaultOption = '<option value="" data-i18n="common.selectMaterial">Pilih Material</option>';
+            inSelect.innerHTML = defaultOption;
+            outSelect.innerHTML = defaultOption;
+            
+            allMaterials.forEach(material => {
+                const option = `<option value="${material.id}" data-stock="${material.current_stock}" data-unit="${material.unit}" data-min="${material.min_stock}">${material.name} (${material.sku_code})</option>`;
+                inSelect.innerHTML += option;
+                outSelect.innerHTML += option;
+            });
+        }
+
+        // Load stock movements
+        async function loadMovements() {
+            const tbody = document.getElementById('movementsTable');
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
+            
+            try {
+                const search = document.getElementById('searchInput').value;
+                const type = document.getElementById('typeFilter').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                let url = '/stock/movements?';
+                if (search) url += `search=${encodeURIComponent(search)}&`;
+                if (type) url += `type=${encodeURIComponent(type)}&`;
+                if (startDate) url += `startDate=${startDate}&`;
+                if (endDate) url += `endDate=${endDate}&`;
+
+                console.log('Loading movements from:', url);
+                const response = await fetchAPI(url);
+                
+                console.log('Movements response:', response);
+                
+                if (response && response.success) {
+                    currentMovements = response.data || [];
+                    displayMovements(currentMovements);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Gagal memuat data: ' + (response?.message || 'Unknown error') + '</td></tr>';
+                    showToast(response?.message || 'Gagal memuat data stock movement', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading movements:', error);
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Error: ' + error.message + '</td></tr>';
+                showToast('Gagal memuat data stock movement: ' + error.message, 'error');
+            }
+        }
+
+        // Display stock movements
+        function displayMovements(movements) {
+            const tbody = document.getElementById('movementsTable');
+            
+            if (movements.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>';
+                return;
+            }
+
+            console.log('Displaying movements:', movements);
+
+            tbody.innerHTML = movements.map(movement => {
+                // Format date properly
+                let dateDisplay = '-';
+                if (movement.movement_date) {
+                    try {
+                        const date = new Date(movement.movement_date);
+                        if (!isNaN(date.getTime())) {
+                            dateDisplay = date.toLocaleDateString('id-ID');
+                        }
+                    } catch (e) {
+                        console.error('Error formatting date:', movement.movement_date, e);
+                    }
+                } else if (movement.created_at) {
+                    // Fallback to created_at if movement_date is null
+                    try {
+                        const date = new Date(movement.created_at);
+                        if (!isNaN(date.getTime())) {
+                            dateDisplay = date.toLocaleDateString('id-ID');
+                        }
+                    } catch (e) {
+                        console.error('Error formatting created_at:', movement.created_at, e);
+                    }
+                }
+
+                // Format type badge
+                let typeBadge = '-';
+                if (movement.movement_type === 'in') {
+                    typeBadge = '<span class="badge badge-success"><i class="fas fa-arrow-down"></i> IN</span>';
+                } else if (movement.movement_type === 'out') {
+                    typeBadge = '<span class="badge badge-danger"><i class="fas fa-arrow-up"></i> OUT</span>';
+                }
+
+                return `
+                    <tr>
+                        <td>${dateDisplay}</td>
+                        <td>${movement.material_name || movement.sku_code || '-'}</td>
+                        <td>${typeBadge}</td>
+                        <td style="font-weight: bold;">${movement.quantity || 0}</td>
+                        <td>${movement.unit || '-'}</td>
+                        <td>${movement.reference_number || '-'}</td>
+                        <td>${movement.notes || '-'}</td>
+                        <td>${movement.user_name || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Show stock in modal
+        async function showStockInModal() {
+            await loadMaterials();
+            document.getElementById('stockInForm').reset();
+            document.getElementById('inMaterialInfo').classList.add('hidden');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('in_date').value = today;
+            document.getElementById('stockInModal').style.display = 'flex';
+        }
+
+        // Close stock in modal
+        function closeStockInModal() {
+            document.getElementById('stockInModal').style.display = 'none';
+            document.getElementById('stockInForm').reset();
+        }
+
+        // Show stock out modal
+        async function showStockOutModal() {
+            await loadMaterials();
+            document.getElementById('stockOutForm').reset();
+            document.getElementById('outMaterialInfo').classList.add('hidden');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('out_date').value = today;
+            document.getElementById('stockOutModal').style.display = 'flex';
+        }
+
+        // Close stock out modal
+        function closeStockOutModal() {
+            document.getElementById('stockOutModal').style.display = 'none';
+            document.getElementById('stockOutForm').reset();
+        }
+
+        // Update material info when selected
+        function updateMaterialInfo(type) {
+            const selectId = type === 'in' ? 'in_material_id' : 'out_material_id';
+            const select = document.getElementById(selectId);
+            const option = select.options[select.selectedIndex];
+            
+            if (option.value) {
+                const stock = option.dataset.stock;
+                const unit = option.dataset.unit;
+                const minStock = option.dataset.min;
+                
+                document.getElementById(`${type}_current_stock`).textContent = stock + ' ' + unit;
+                document.getElementById(`${type}_unit`).textContent = unit;
+                document.getElementById(`${type}_min_stock`).textContent = minStock + ' ' + unit;
+                document.getElementById(`${type}MaterialInfo`).classList.remove('hidden');
+                
+                if (type === 'out') {
+                    checkStockOut();
+                }
+            } else {
+                document.getElementById(`${type}MaterialInfo`).classList.add('hidden');
+            }
+        }
+
+        // Check stock out quantity
+        function checkStockOut() {
+            const select = document.getElementById('out_material_id');
+            const option = select.options[select.selectedIndex];
+            const quantity = parseFloat(document.getElementById('out_quantity').value) || 0;
+            const warning = document.getElementById('out_warning');
+            const warningText = document.getElementById('out_warning_text');
+            
+            if (option.value && quantity > 0) {
+                const currentStock = parseFloat(option.dataset.stock);
+                const minStock = parseFloat(option.dataset.min);
+                const remainingStock = currentStock - quantity;
+                
+                if (quantity > currentStock) {
+                    warning.classList.remove('hidden');
+                    warning.className = 'alert alert-danger mt-10';
+                    warningText.textContent = `Quantity melebihi stock tersedia! Stock saat ini: ${currentStock}`;
+                } else if (remainingStock < minStock) {
+                    warning.classList.remove('hidden');
+                    warning.className = 'alert alert-warning mt-10';
+                    warningText.textContent = `Peringatan: Stock akan di bawah minimum (${minStock}) setelah pengurangan ini!`;
+                } else {
+                    warning.classList.add('hidden');
+                }
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+
+        // Save stock in
+        async function saveStockIn() {
+            try {
+                const form = document.getElementById('stockInForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const formData = {
+                    material_id: parseInt(document.getElementById('in_material_id').value),
+                    quantity: parseFloat(document.getElementById('in_quantity').value),
+                    movement_date: document.getElementById('in_date').value,
+                    reference_number: document.getElementById('in_reference').value || null,
+                    notes: document.getElementById('in_notes').value || null
+                };
+
+                const response = await fetchAPI('/stock/in', {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+
+                if (response && response.success) {
+                    showToast('Stock In berhasil disimpan', 'success');
+                    closeStockInModal();
+                    loadMovements();
+                } else {
+                    showToast(response.message || 'Gagal menyimpan Stock In', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving stock in:', error);
+                showToast('Terjadi kesalahan saat menyimpan', 'error');
+            }
+        }
+
+        // Save stock out
+        async function saveStockOut() {
+            try {
+                const form = document.getElementById('stockOutForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                // Check if quantity exceeds stock
+                const select = document.getElementById('out_material_id');
+                const option = select.options[select.selectedIndex];
+                const quantity = parseFloat(document.getElementById('out_quantity').value);
+                const currentStock = parseFloat(option.dataset.stock);
+
+                if (quantity > currentStock) {
+                    showToast('Quantity melebihi stock tersedia!', 'error');
+                    return;
+                }
+
+                const formData = {
+                    material_id: parseInt(document.getElementById('out_material_id').value),
+                    quantity: quantity,
+                    movement_date: document.getElementById('out_date').value,
+                    reference_number: document.getElementById('out_reference').value || null,
+                    notes: document.getElementById('out_notes').value || null
+                };
+
+                const response = await fetchAPI('/stock/out', {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+
+                if (response && response.success) {
+                    showToast('Stock Out berhasil disimpan', 'success');
+                    closeStockOutModal();
+                    loadMovements();
+                } else {
+                    showToast(response.message || 'Gagal menyimpan Stock Out', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving stock out:', error);
+                showToast('Terjadi kesalahan saat menyimpan', 'error');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const inModal = document.getElementById('stockInModal');
+            const outModal = document.getElementById('stockOutModal');
+            
+            if (event.target === inModal) {
+                closeStockInModal();
+            }
+            if (event.target === outModal) {
+                closeStockOutModal();
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserInfo();
+            setDefaultDates();
+            loadMaterials(); // Pre-load materials for caching
+            loadMovements();
+        });
+
+        // Search on enter
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadMovements();
+            }
+        });
+        
+        // Sort table function
+        function sortTable(column) {
+            if (sortColumn === column) {
+                // Toggle direction if same column
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                // New column, default to ascending
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+            
+            // Update sort icons
+            document.querySelectorAll('[id^=\"sort_\"]').forEach(icon => {
+                icon.className = 'fas fa-sort';
+            });
+            
+            const sortIcon = document.getElementById(`sort_${column}`);
+            if (sortIcon) {
+                sortIcon.className = sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+            }
+            
+            // Sort the data
+            const sorted = [...currentMovements].sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                // Handle null values
+                if (aVal === null || aVal === undefined) aVal = '';
+                if (bVal === null || bVal === undefined) bVal = '';
+                
+                // Convert to string for comparison
+                aVal = String(aVal).toLowerCase();
+                bVal = String(bVal).toLowerCase();
+                
+                if (sortDirection === 'asc') {
+                    return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+                } else {
+                    return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+                }
+            });
+            
+            displayMovements(sorted);
+        }
+        
+        // Export to Excel function
+        function exportToExcel() {
+            if (currentMovements.length === 0) {
+                showToast('Tidak ada data untuk di-export', 'warning');
+                return;
+            }
+            
+            // Create Excel-friendly CSV with UTF-8 BOM
+            let csv = '\uFEFF'; // UTF-8 BOM for Excel
+            
+            // Add title and date
+            csv += `"STOCK MOVEMENT REPORT"\n`;
+            csv += `"Tanggal: ${new Date().toLocaleDateString('id-ID')}"\n`;
+            csv += `\n`; // Empty line
+            
+            // Add headers with quotes
+            csv += `"Tanggal","Material","Tipe","Jumlah","Satuan","Referensi","Catatan","User"\n`;
+            
+            // Add data rows
+            currentMovements.forEach(movement => {
+                const date = movement.movement_date ? new Date(movement.movement_date).toLocaleDateString('id-ID') : '-';
+                const material = (movement.material_name || movement.sku_code || '-').replace(/"/g, '""');
+                const type = movement.movement_type === 'in' ? 'IN' : movement.movement_type === 'out' ? 'OUT' : '-';
+                const quantity = movement.quantity || 0;
+                const unit = (movement.unit || '-').replace(/"/g, '""');
+                const reference = (movement.reference_number || '-').replace(/"/g, '""');
+                const notes = (movement.notes || '-').replace(/"/g, '""');
+                const user = (movement.user_name || '-').replace(/"/g, '""');
+                
+                csv += `"${date}","${material}","${type}","${quantity}","${unit}","${reference}","${notes}","${user}"\n`;
+            });
+            
+            // Add summary
+            csv += `\n`; // Empty line
+            csv += `"Total Records:","${currentMovements.length}"\n`;
+            
+            // Create download link
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `stock_movement_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('Data berhasil di-export ke Excel', 'success');
+        }
+    </script>
+    <script src="/js/modules/loader.js"></script>
+</body>
+</html>

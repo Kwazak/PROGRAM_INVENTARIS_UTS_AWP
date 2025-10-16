@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="dashboard.title">Dashboard - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251016">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" data-i18n="dashboard.title">Dashboard</h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                
+                <button class="btn-icon" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Stats Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-primary">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalInventoryValue">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="dashboard.totalInventory">Total Nilai Inventori</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="activeWorkOrders">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="dashboard.activeWorkOrders">Work Order Aktif</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="lowStockAlerts">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="dashboard.lowStockAlerts">Low Stock Alert</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-info">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="pendingOrders">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="dashboard.pendingOrders">Pesanan Pending</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-danger">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="monthlyRevenue">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="dashboard.monthlyRevenue">Pendapatan Bulan Ini</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="todayProduction">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="dashboard.todayProduction">Produksi Hari Ini</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts and Tables -->
+            <div class="dashboard-grid">
+                <!-- Recent Work Orders -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tasks"></i> <span data-i18n="dashboard.recentWorkOrders">Work Order Terbaru</span></h3>
+                        <a href="/production.html" class="btn-link" data-i18n="app.viewAll">Lihat Semua</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="production.woNumber">WO Number</th>
+                                        <th data-i18n="production.product">Produk</th>
+                                        <th data-i18n="production.quantity">Qty</th>
+                                        <th data-i18n="app.status">Status</th>
+                                        <th data-i18n="production.dueDate">Due Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentWorkOrdersTable">
+                                    <tr><td colspan="5" class="text-center" data-i18n="app.loading">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Low Stock Materials -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-exclamation-circle"></i> <span data-i18n="dashboard.lowStockMaterials">Bahan Baku Low Stock</span></h3>
+                        <a href="/inventory.html" class="btn-link" data-i18n="app.viewAll">Lihat Semua</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="materials.name">Material</th>
+                                        <th data-i18n="materials.stock">Stock</th>
+                                        <th data-i18n="materials.minStock">Min Stock</th>
+                                        <th data-i18n="app.status">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lowStockTable">
+                                    <tr><td colspan="4" class="text-center" data-i18n="app.loading">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-shopping-cart"></i> <span data-i18n="dashboard.recentOrders">Pesanan Terbaru</span></h3>
+                        <a href="/orders.html" class="btn-link" data-i18n="app.viewAll">Lihat Semua</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="orders.number">SO Number</th>
+                                        <th data-i18n="orders.customer">Customer</th>
+                                        <th data-i18n="orders.total">Total</th>
+                                        <th data-i18n="app.status">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersTable">
+                                    <tr><td colspan="4" class="text-center" data-i18n="app.loading">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/modules/loader.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/main.js"></script>
+    <!-- Chart.js for dashboard charts (PoC) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/js/dashboard-charts.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

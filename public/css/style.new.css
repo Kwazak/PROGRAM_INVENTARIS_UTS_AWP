@@ -1,0 +1,49 @@
+/**
+ * Factory Inventory System - Modular Stylesheet
+ * Version: 2.0.0 (Modular Architecture)
+ * Author: Admin
+ * 
+ * This is the main entry point that imports all CSS modules.
+ * Import order is critical: base → layout → components → pages → utilities
+ * 
+ * BACKUP: Original style.css saved as style.legacy.css (2,277 lines)
+ */
+
+/* ========================================
+   1. BASE MODULES (Foundation)
+   ======================================== */
+@import './modules/base/variables.css';
+@import './modules/base/reset.css';
+@import './modules/base/typography.css';
+
+/* ========================================
+   2. LAYOUT MODULES (Structure)
+   ======================================== */
+@import './modules/layout/sidebar.css';
+@import './modules/layout/topbar.css';
+@import './modules/layout/main.css';
+
+/* ========================================
+   3. COMPONENT MODULES (Reusable UI)
+   ======================================== */
+@import './modules/components/buttons.css';
+@import './modules/components/forms.css';
+@import './modules/components/cards.css';
+@import './modules/components/tables.css';
+@import './modules/components/modals.css';
+@import './modules/components/alerts.css';
+@import './modules/components/badges.css';
+@import './modules/components/tabs.css';
+@import './modules/components/pagination.css';
+
+/* ========================================
+   4. UTILITY MODULES (Helpers)
+   ======================================== */
+@import './modules/utilities/spacing.css';
+@import './modules/utilities/display.css';
+
+/* ========================================
+   5. LEGACY COMPATIBILITY
+   Note: Original monolithic style.css (2,277 lines) 
+   backed up to style.legacy.css
+   ======================================== */

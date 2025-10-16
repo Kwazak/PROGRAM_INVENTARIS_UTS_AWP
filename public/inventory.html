@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bahan Baku - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item active">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" data-i18n="nav.materials">Bahan Baku</h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                <button class="btn-icon" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+
+            <!-- Stats Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-primary">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalMaterials">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="inventory.totalMaterials">TOTAL MATERIALS</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalStock">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="inventory.totalStock">TOTAL STOCK</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="lowStock">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="inventory.lowStock">LOW STOCK</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-danger">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalNilai">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="inventory.totalValue">TOTAL NILAI</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card filters-card">
+                <div class="card-body">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <input type="text" id="searchInput" data-i18n-placeholder="inventory.searchPlaceholder" placeholder="Cari bahan baku..." class="form-control" aria-label="Search materials">
+                        </div>
+                        <div class="form-group">
+                            <select id="categoryFilter" class="form-control" title="Filter by category" aria-label="Filter by category">
+                                <option value="" data-i18n="inventory.allCategories">Semua Kategori</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="statusFilter" class="form-control" title="Filter by status" aria-label="Filter by status">
+                                <option value="" data-i18n="inventory.allStatus">Semua Status</option>
+                                <option value="active" data-i18n="app.active">Active</option>
+                                <option value="discontinued" data-i18n="inventory.discontinued">Discontinued</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadMaterials()">
+                            <i class="fas fa-search"></i> <span data-i18n="app.filter">Filter</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-content">
+                        <h3><i class="fas fa-list"></i> <span data-i18n="inventory.materialList">Daftar Bahan Baku</span></h3>
+                        <div class="card-header-actions">
+                            <button class="btn btn-primary btn-sm" onclick="showAddMaterialModal()">
+                                <i class="fas fa-plus"></i> <span data-i18n="inventory.addMaterial">Tambah Bahan Baku</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="showLowStockMaterials()">
+                                <i class="fas fa-exclamation-triangle"></i> <span data-i18n="inventory.lowStock">Low Stock</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="showStockMovement()">
+                                <i class="fas fa-exchange-alt"></i> <span data-i18n="inventory.stockMovement">Stock Movement</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="inventory.sku">SKU</th>
+                                    <th data-i18n="inventory.name">Nama</th>
+                                    <th data-i18n="inventory.category">Kategori</th>
+                                    <th data-i18n="inventory.stock">Stock</th>
+                                    <th data-i18n="inventory.unit">Unit</th>
+                                    <th data-i18n="inventory.pricePerUnit">Harga/Unit</th>
+                                    <th data-i18n="inventory.minStock">Min Stock</th>
+                                    <th data-i18n="inventory.supplier">Supplier</th>
+                                    <th data-i18n="app.status">Status</th>
+                                    <th data-i18n="app.actions">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materialsTable">
+                                <tr><td colspan="10" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Detail Modal -->
+    <div id="materialDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-box"></i> Detail Bahan Baku</h2>
+                <span class="close-btn" onclick="closeMaterialDetailModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="materialDetailContent">
+                    <div class="details-section">
+                        <h3>Informasi Dasar</h3>
+                        <div class="details-grid">
+                            <div><strong>SKU:</strong> <span id="detail_sku"></span></div>
+                            <div><strong>Nama:</strong> <span id="detail_name"></span></div>
+                            <div><strong>Kategori:</strong> <span id="detail_category"></span></div>
+                            <div><strong>Status:</strong> <span id="detail_status"></span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h3>Informasi Stock</h3>
+                        <div class="details-grid">
+                            <div><strong>Stock Saat Ini:</strong> <span id="detail_stock"></span></div>
+                            <div><strong>Unit:</strong> <span id="detail_unit"></span></div>
+                            <div><strong>Min Stock:</strong> <span id="detail_min_stock"></span></div>
+                            <div><strong>Max Stock:</strong> <span id="detail_max_stock"></span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h3>Informasi Harga & Supplier</h3>
+                        <div class="details-grid">
+                            <div><strong>Harga/Unit:</strong> <span id="detail_price"></span></div>
+                            <div><strong>Total Nilai Stock:</strong> <span id="detail_total_value"></span></div>
+                            <div><strong>Supplier:</strong> <span id="detail_supplier"></span></div>
+                            <div><strong>Lead Time:</strong> <span id="detail_lead_time"></span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h3>Deskripsi & Spesifikasi</h3>
+                        <p id="detail_description"></p>
+                        <div class="details-grid">
+                            <div><strong>Storage Location:</strong> <span id="detail_location"></span></div>
+                            <div><strong>Last Updated:</strong> <span id="detail_updated"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning" onclick="openEditFromDetail()">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-secondary" onclick="closeMaterialDetailModal()">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Material Modal -->
+    <div id="editMaterialModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Bahan Baku</h2>
+                <span class="close-btn" onclick="closeEditMaterialModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editMaterialForm">
+                    <input type="hidden" id="edit_material_id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_sku_code">SKU Code <span class="required">*</span></label>
+                            <input type="text" id="edit_sku_code" class="form-control" required readonly title="SKU Code (Auto-generated)">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_name">Nama Bahan Baku <span class="required">*</span></label>
+                            <input type="text" id="edit_name" class="form-control" required title="Nama Bahan Baku" placeholder="Masukkan nama bahan baku">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_category_id">Kategori <span class="required">*</span></label>
+                            <select id="edit_category_id" class="form-control" required title="Pilih Kategori">
+                                <option value="">Pilih Kategori</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_supplier_id">Supplier</label>
+                            <select id="edit_supplier_id" class="form-control" title="Pilih Supplier">
+                                <option value="">Pilih Supplier</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_unit">Unit <span class="required">*</span></label>
+                            <select id="edit_unit" class="form-control" required title="Pilih Unit">
+                                <option value="kg">Kilogram (kg)</option>
+                                <option value="m">Meter (m)</option>
+                                <option value="m2">Meter Persegi (m²)</option>
+                                <option value="liter">Liter</option>
+                                <option value="pcs">Pieces (pcs)</option>
+                                <option value="roll">Roll</option>
+                                <option value="sheet">Sheet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_unit_price">Harga per Unit <span class="required">*</span></label>
+                            <input type="number" id="edit_unit_price" class="form-control" step="0.01" required title="Harga per Unit" placeholder="0.00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_current_stock">Current Stock <span class="required">*</span></label>
+                            <input type="number" id="edit_current_stock" class="form-control" step="0.01" required title="Current Stock" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_min_stock">Min Stock <span class="required">*</span></label>
+                            <input type="number" id="edit_min_stock" class="form-control" step="0.01" required title="Minimum Stock" placeholder="0.00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_max_stock">Max Stock</label>
+                            <input type="number" id="edit_max_stock" class="form-control" step="0.01" title="Maximum Stock" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_lead_time">Lead Time (hari)</label>
+                            <input type="number" id="edit_lead_time" class="form-control" title="Lead Time dalam hari" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_lead_time">Lead Time (hari)</label>
+                            <input type="number" id="edit_lead_time" class="form-control" title="Lead Time dalam hari" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_storage_location">Storage Location</label>
+                            <input type="text" id="edit_storage_location" class="form-control" title="Lokasi Penyimpanan" placeholder="Contoh: Rak A-1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_status">Status <span class="required">*</span></label>
+                            <select id="edit_status" class="form-control" required title="Pilih Status">
+                                <option value="active">Active</option>
+                                <option value="discontinued">Discontinued</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <!-- Empty for spacing -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_description">Deskripsi</label>
+                        <textarea id="edit_description" class="form-control" rows="3" title="Deskripsi Bahan Baku" placeholder="Masukkan deskripsi (opsional)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="updateMaterial()">
+                    <i class="fas fa-save"></i> Simpan Perubahan
+                </button>
+                <button class="btn btn-secondary" onclick="closeEditMaterialModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Material Modal -->
+    <div id="addMaterialModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> Tambah Bahan Baku Baru</h2>
+                <span class="close-btn" onclick="closeAddMaterialModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addMaterialForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SKU Code <span class="required">*</span></label>
+                            <input type="text" id="add_sku_code" class="form-control" required placeholder="Misal: MAT-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Nama Bahan Baku <span class="required">*</span></label>
+                            <input type="text" id="add_name" class="form-control" required placeholder="Nama bahan baku">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="add_category_id">Kategori <span class="required">*</span></label>
+                            <select id="add_category_id" class="form-control" required title="Pilih Kategori">
+                                <option value="">Pilih Kategori</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="add_supplier_id">Supplier</label>
+                            <select id="add_supplier_id" class="form-control" title="Pilih Supplier">
+                                <option value="">Pilih Supplier</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="add_unit">Unit <span class="required">*</span></label>
+                            <select id="add_unit" class="form-control" required title="Pilih Unit">
+                                <option value="">Pilih Unit</option>
+                                <option value="kg">Kilogram (kg)</option>
+                                <option value="m">Meter (m)</option>
+                                <option value="m2">Meter Persegi (m²)</option>
+                                <option value="liter">Liter</option>
+                                <option value="pcs">Pieces (pcs)</option>
+                                <option value="roll">Roll</option>
+                                <option value="sheet">Sheet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Harga per Unit <span class="required">*</span></label>
+                            <input type="number" id="add_unit_price" class="form-control" step="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Stock Awal <span class="required">*</span></label>
+                            <input type="number" id="add_current_stock" class="form-control" step="0.01" required placeholder="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Min Stock <span class="required">*</span></label>
+                            <input type="number" id="add_min_stock" class="form-control" step="0.01" required placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Max Stock</label>
+                            <input type="number" id="add_max_stock" class="form-control" step="0.01" placeholder="Optional">
+                        </div>
+                        <div class="form-group">
+                            <label>Lead Time (hari)</label>
+                            <input type="number" id="add_lead_time" class="form-control" placeholder="Optional">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Storage Location</label>
+                        <input type="text" id="add_storage_location" class="form-control" placeholder="Misal: A-12, B-05">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Deskripsi</label>
+                        <textarea id="add_description" class="form-control" rows="3" placeholder="Deskripsi material (optional)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveMaterial()">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+                <button class="btn btn-secondary" onclick="closeAddMaterialModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // Load materials
+        async function loadMaterials() {
+            try {
+                const search = document.getElementById('searchInput').value;
+                const category = document.getElementById('categoryFilter').value;
+                const status = document.getElementById('statusFilter').value;
+
+                let url = '/materials?';
+                if (search) url += `search=${search}&`;
+                if (category) url += `category=${category}&`;
+                if (status) url += `status=${status}&`;
+
+                const response = await fetchAPI(url);
+                
+                if (response && response.success) {
+                    displayMaterials(response.data);
+                }
+            } catch (error) {
+                console.error('Error loading materials:', error);
+            }
+        }
+
+        // Display materials
+        function displayMaterials(materials) {
+            const tbody = document.getElementById('materialsTable');
+            
+            if (materials.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = materials.map(material => `
+                <tr>
+                    <td>${material.sku_code}</td>
+                    <td>${material.name}</td>
+                    <td>${material.category_name || '-'}</td>
+                    <td style="font-weight: bold; color: ${material.current_stock <= material.min_stock ? 'red' : 'inherit'}">
+                        ${material.current_stock}
+                    </td>
+                    <td>${material.unit}</td>
+                    <td>${formatCurrency(material.unit_price)}</td>
+                    <td>${material.min_stock}</td>
+                    <td>${material.supplier_name || '-'}</td>
+                    <td>${getStatusBadge(material.status)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewMaterial(${material.id})" title="Detail">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="editMaterial(${material.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const response = await fetchAPI('/materials/categories/list');
+                if (response && response.success) {
+                    const select = document.getElementById('categoryFilter');
+                    response.data.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id;
+                        option.textContent = cat.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // View material detail
+        async function viewMaterial(id) {
+            try {
+                const response = await fetchAPI(`/materials/${id}`);
+                if (response && response.success) {
+                    showMaterialDetail(response.data);
+                }
+            } catch (error) {
+                console.error('Error loading material detail:', error);
+                showToast('Gagal memuat detail material', 'error');
+            }
+        }
+
+        // Show material detail in modal
+        function showMaterialDetail(material) {
+            document.getElementById('detail_sku').textContent = material.sku_code;
+            document.getElementById('detail_name').textContent = material.name;
+            document.getElementById('detail_category').textContent = material.category_name || '-';
+            document.getElementById('detail_status').innerHTML = getStatusBadge(material.status);
+            
+            document.getElementById('detail_stock').textContent = material.current_stock;
+            document.getElementById('detail_unit').textContent = material.unit;
+            document.getElementById('detail_min_stock').textContent = material.min_stock;
+            document.getElementById('detail_max_stock').textContent = material.max_stock || '-';
+            
+            document.getElementById('detail_price').textContent = formatCurrency(material.unit_price);
+            const totalValue = material.current_stock * material.unit_price;
+            document.getElementById('detail_total_value').textContent = formatCurrency(totalValue);
+            document.getElementById('detail_supplier').textContent = material.supplier_name || '-';
+            document.getElementById('detail_lead_time').textContent = material.lead_time ? `${material.lead_time} hari` : '-';
+            
+            document.getElementById('detail_description').textContent = material.description || 'Tidak ada deskripsi';
+            document.getElementById('detail_location').textContent = material.storage_location || '-';
+            document.getElementById('detail_updated').textContent = material.updated_at ? 
+                new Date(material.updated_at).toLocaleString('id-ID') : '-';
+            
+            // Store material ID for edit button
+            document.getElementById('materialDetailModal').dataset.materialId = material.id;
+            
+            // Show modal
+            document.getElementById('materialDetailModal').style.display = 'flex';
+        }
+
+        // Close material detail modal
+        function closeMaterialDetailModal() {
+            document.getElementById('materialDetailModal').style.display = 'none';
+        }
+
+        // Open edit modal from detail modal
+        function openEditFromDetail() {
+            const materialId = document.getElementById('materialDetailModal').dataset.materialId;
+            closeMaterialDetailModal();
+            editMaterial(materialId);
+        }
+
+        // Edit material
+        async function editMaterial(id) {
+            try {
+                const response = await fetchAPI(`/materials/${id}`);
+                if (response && response.success) {
+                    await loadEditFormData();
+                    showEditMaterialForm(response.data);
+                }
+            } catch (error) {
+                console.error('Error loading material for edit:', error);
+                showToast('Gagal memuat data material', 'error');
+            }
+        }
+
+        // Load data for edit form (categories and suppliers)
+        async function loadEditFormData() {
+            try {
+                // Load categories
+                const catResponse = await fetchAPI('/materials/categories/list');
+                if (catResponse && catResponse.success) {
+                    const catSelect = document.getElementById('edit_category_id');
+                    catSelect.innerHTML = '<option value="">Pilih Kategori</option>';
+                    catResponse.data.forEach(cat => {
+                        catSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    });
+                }
+                
+                // Load suppliers
+                const supResponse = await fetchAPI('/suppliers');
+                if (supResponse && supResponse.success) {
+                    const supSelect = document.getElementById('edit_supplier_id');
+                    supSelect.innerHTML = '<option value="">Pilih Supplier</option>';
+                    supResponse.data.forEach(sup => {
+                        supSelect.innerHTML += `<option value="${sup.id}">${sup.company_name}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading form data:', error);
+            }
+        }
+
+        // Show edit material form
+        function showEditMaterialForm(material) {
+            document.getElementById('edit_material_id').value = material.id;
+            document.getElementById('edit_sku_code').value = material.sku_code;
+            document.getElementById('edit_name').value = material.name;
+            document.getElementById('edit_category_id').value = material.category_id || '';
+            document.getElementById('edit_supplier_id').value = material.supplier_id || '';
+            document.getElementById('edit_unit').value = material.unit;
+            document.getElementById('edit_unit_price').value = material.unit_price;
+            document.getElementById('edit_current_stock').value = material.current_stock;
+            document.getElementById('edit_min_stock').value = material.min_stock;
+            document.getElementById('edit_max_stock').value = material.max_stock || '';
+            document.getElementById('edit_lead_time').value = material.lead_time || '';
+            document.getElementById('edit_storage_location').value = material.storage_location || '';
+            document.getElementById('edit_status').value = material.status;
+            document.getElementById('edit_description').value = material.description || '';
+            
+            // Show modal
+            document.getElementById('editMaterialModal').style.display = 'flex';
+        }
+
+        // Close edit material modal
+        function closeEditMaterialModal() {
+            document.getElementById('editMaterialModal').style.display = 'none';
+            document.getElementById('editMaterialForm').reset();
+        }
+
+        // Update material
+        async function updateMaterial() {
+            try {
+                const materialId = document.getElementById('edit_material_id').value;
+                const formData = {
+                    name: document.getElementById('edit_name').value,
+                    category_id: document.getElementById('edit_category_id').value || null,
+                    supplier_id: document.getElementById('edit_supplier_id').value || null,
+                    unit: document.getElementById('edit_unit').value,
+                    unit_price: parseFloat(document.getElementById('edit_unit_price').value),
+                    current_stock: parseFloat(document.getElementById('edit_current_stock').value),
+                    min_stock: parseFloat(document.getElementById('edit_min_stock').value),
+                    max_stock: document.getElementById('edit_max_stock').value ? 
+                        parseFloat(document.getElementById('edit_max_stock').value) : null,
+                    lead_time: document.getElementById('edit_lead_time').value ? 
+                        parseInt(document.getElementById('edit_lead_time').value) : null,
+                    warehouse_location: document.getElementById('edit_storage_location').value || null,
+                    status: document.getElementById('edit_status').value,
+                    description: document.getElementById('edit_description').value || null
+                };
+
+                const response = await fetchAPI(`/materials/${materialId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(formData)
+                });
+
+                if (response && response.success) {
+                    showToast('Material berhasil diupdate', 'success');
+                    closeEditMaterialModal();
+                    loadMaterials();
+                } else {
+                    showToast(response.message || 'Gagal update material', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating material:', error);
+                showToast('Terjadi kesalahan saat update material', 'error');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const detailModal = document.getElementById('materialDetailModal');
+            const editModal = document.getElementById('editMaterialModal');
+            
+            if (event.target === detailModal) {
+                closeMaterialDetailModal();
+            }
+            if (event.target === editModal) {
+                closeEditMaterialModal();
+            }
+        }
+
+        // Show add material modal
+        async function showAddMaterialModal() {
+            try {
+                await loadAddFormData();
+                document.getElementById('addMaterialForm').reset();
+                
+                // Auto-fill Material SKU
+                try {
+                    const response = await fetchAPI('/auto-number/material-sku');
+                    if (response.success) {
+                        document.getElementById('add_sku_code').value = response.number;
+                        document.getElementById('add_sku_code').readOnly = true;
+                    }
+                } catch (error) {
+                    console.error('Error getting Material SKU:', error);
+                }
+                
+                document.getElementById('addMaterialModal').style.display = 'flex';
+            } catch (error) {
+                console.error('Error opening add modal:', error);
+                showToast('Gagal membuka form tambah material', 'error');
+            }
+        }
+
+        // Close add material modal
+        function closeAddMaterialModal() {
+            document.getElementById('addMaterialModal').style.display = 'none';
+            document.getElementById('addMaterialForm').reset();
+        }
+
+        // Load data for add form (categories and suppliers)
+        async function loadAddFormData() {
+            try {
+                // Load categories
+                const catResponse = await fetchAPI('/materials/categories/list');
+                if (catResponse && catResponse.success) {
+                    const catSelect = document.getElementById('add_category_id');
+                    catSelect.innerHTML = '<option value="">Pilih Kategori</option>';
+                    catResponse.data.forEach(cat => {
+                        catSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    });
+                }
+                
+                // Load suppliers
+                const supResponse = await fetchAPI('/suppliers');
+                if (supResponse && supResponse.success) {
+                    const supSelect = document.getElementById('add_supplier_id');
+                    supSelect.innerHTML = '<option value="">Pilih Supplier</option>';
+                    supResponse.data.forEach(sup => {
+                        supSelect.innerHTML += `<option value="${sup.id}">${sup.company_name}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading form data:', error);
+            }
+        }
+
+        // Save new material
+        async function saveMaterial() {
+            try {
+                // Validate form
+                const form = document.getElementById('addMaterialForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const formData = {
+                    // sku_code removed - backend will auto-generate
+                    name: document.getElementById('add_name').value,
+                    category_id: document.getElementById('add_category_id').value || null,
+                    supplier_id: document.getElementById('add_supplier_id').value || null,
+                    unit: document.getElementById('add_unit').value,
+                    unit_price: parseFloat(document.getElementById('add_unit_price').value),
+                    current_stock: parseFloat(document.getElementById('add_current_stock').value) || 0,
+                    min_stock: parseFloat(document.getElementById('add_min_stock').value),
+                    max_stock: document.getElementById('add_max_stock').value ? 
+                        parseFloat(document.getElementById('add_max_stock').value) : null,
+                    lead_time: document.getElementById('add_lead_time').value ? 
+                        parseInt(document.getElementById('add_lead_time').value) : null,
+                    warehouse_location: document.getElementById('add_storage_location').value || null,
+                    description: document.getElementById('add_description').value || null
+                };
+
+                const response = await fetchAPI('/materials', {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+
+                if (response && response.success) {
+                    showToast('Material berhasil ditambahkan', 'success');
+                    closeAddMaterialModal();
+                    loadMaterials();
+                } else {
+                    showToast(response.message || 'Gagal menambahkan material', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving material:', error);
+                showToast('Terjadi kesalahan saat menyimpan material', 'error');
+            }
+        }
+
+        // Show low stock materials
+        function showLowStockMaterials() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            
+            fetchAPI('/materials/alerts/low-stock').then(response => {
+                if (response && response.success) {
+                    displayMaterials(response.data);
+                    showToast(`Ditemukan ${response.count} material dengan stock rendah`, 'warning');
+                }
+            });
+        }
+
+        // Show stock movement
+        function showStockMovement() {
+            window.location.href = '/stock-movement.html';
+        }
+
+        // Close modal when clicking outside (for add modal)
+        const addModal = document.getElementById('addMaterialModal');
+        window.addEventListener('click', function(event) {
+            if (event.target === addModal) {
+                closeAddMaterialModal();
+            }
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+            loadMaterials();
+            loadMaterialsSummary();
+        });
+
+        // Search on enter
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadMaterials();
+            }
+        });
+
+        // Load materials summary (total items, total stock, low stock, total value)
+        async function loadMaterialsSummary() {
+            try {
+                // Call the dashboard inventory endpoint which already computes values
+                const resp = await fetchAPI('/dashboard/inventory');
+                if (resp && resp.success && resp.data && resp.data.inventory) {
+                    const inv = resp.data.inventory;
+                    // total materials count
+                    document.getElementById('totalMaterials').textContent = inv.materialItems || 0;
+
+                    // total stock: we will display the sum of current_stock as a plain number
+                    // if API provides materialItems only, compute by calling materials list
+                    if (typeof inv.materialItems !== 'undefined') {
+                        // try to get sum via server: endpoint not available, so compute client-side
+                        const matsResp = await fetchAPI('/materials');
+                        if (matsResp && matsResp.success) {
+                            const mats = matsResp.data || [];
+                            const totalStockCount = mats.reduce((s, m) => s + (parseFloat(m.current_stock) || 0), 0);
+                            document.getElementById('totalStock').textContent = Math.round(totalStockCount);
+                            // compute monetary value client-side as backup
+                            const totalValue = mats.reduce((s, m) => s + ((parseFloat(m.current_stock) || 0) * (parseFloat(m.unit_price) || 0)), 0);
+                            document.getElementById('totalNilai').textContent = formatCurrency(totalValue);
+                        } else {
+                            document.getElementById('totalStock').textContent = 0;
+                            document.getElementById('totalNilai').textContent = formatCurrency(inv.materialValue || 0);
+                        }
+                    } else {
+                        document.getElementById('totalStock').textContent = 0;
+                        document.getElementById('totalNilai').textContent = formatCurrency(inv.materialValue || 0);
+                    }
+
+                    // low stock count
+                    const alerts = resp.data.alerts || {};
+                    document.getElementById('lowStock').textContent = alerts.lowStockMaterials || 0;
+                }
+            } catch (error) {
+                console.error('Error loading materials summary:', error);
+            }
+        }
+    </script>
+    <script src="/js/modules/loader.js"></script>
+</body>
+</html>

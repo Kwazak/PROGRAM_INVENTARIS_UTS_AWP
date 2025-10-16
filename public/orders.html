@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Order - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Print Styles */
+        @media print {
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+            
+            /* Hide everything except print area */
+            body * {
+                visibility: hidden !important;
+            }
+            
+            .sidebar, .topbar, .modal-footer, .modal-header, .close-btn, .no-print,
+            .modal-backdrop, .modal-overlay {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            
+            #printableArea,
+            #printableArea * {
+                visibility: visible !important;
+            }
+            
+            #printableArea {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: white !important;
+            }
+            
+            /* Print Header */
+            #printableArea .print-header {
+                text-align: center !important;
+                border-bottom: 3px double #000 !important;
+                padding-bottom: 15px !important;
+                margin-bottom: 25px !important;
+            }
+            
+            #printableArea .print-company-name { 
+                font-size: 28px !important; 
+                font-weight: bold !important; 
+                color: #000 !important;
+                letter-spacing: 1px !important;
+                margin-bottom: 5px !important;
+            }
+            
+            #printableArea .print-document-title { 
+                font-size: 20px !important; 
+                color: #333 !important; 
+                font-weight: 600 !important;
+                margin: 8px 0 !important;
+            }
+            
+            #printableArea .print-header > div:last-child {
+                font-size: 11px !important;
+                color: #666 !important;
+                margin-top: 8px !important;
+            }
+            
+            /* Info Grid */
+            #printableArea .print-info-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 20px !important;
+                margin: 25px 0 !important;
+            }
+            
+            #printableArea .print-info-box {
+                border: 2px solid #333 !important;
+                padding: 18px !important;
+                border-radius: 0 !important;
+                background: #fafafa !important;
+                page-break-inside: avoid !important;
+            }
+            
+            #printableArea .print-info-box h4 { 
+                margin: 0 0 12px 0 !important; 
+                font-size: 15px !important; 
+                color: #000 !important;
+                font-weight: bold !important;
+                border-bottom: 1px solid #999 !important;
+                padding-bottom: 6px !important;
+            }
+            
+            #printableArea .print-info-row { 
+                margin: 10px 0 !important; 
+                font-size: 12px !important;
+                line-height: 1.6 !important;
+            }
+            
+            #printableArea .print-info-row strong { 
+                display: inline-block !important; 
+                width: 145px !important;
+                color: #333 !important;
+                font-weight: 600 !important;
+            }
+            
+            #printableArea .print-info-row span {
+                color: #000 !important;
+            }
+            
+            /* Remove badge styling for print */
+            #printableArea .order-status-badge {
+                display: inline !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                color: #000 !important;
+                font-weight: normal !important;
+            }
+            
+            /* Table Section */
+            #printableArea .details-section h3 {
+                font-size: 16px !important;
+                font-weight: bold !important;
+                color: #000 !important;
+                margin: 25px 0 12px 0 !important;
+                padding-bottom: 6px !important;
+                border-bottom: 2px solid #333 !important;
+            }
+            
+            #printableArea .print-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin: 15px 0 25px 0 !important;
+                page-break-inside: avoid !important;
+            }
+            
+            #printableArea .print-table th {
+                background: #333 !important;
+                color: white !important;
+                padding: 12px 8px !important;
+                text-align: left !important;
+                border: 1px solid #000 !important;
+                font-size: 11px !important;
+                font-weight: bold !important;
+                text-transform: uppercase !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            #printableArea .print-table td {
+                padding: 10px 8px !important;
+                border: 1px solid #666 !important;
+                font-size: 11px !important;
+                background: white !important;
+            }
+            
+            #printableArea .print-table tbody tr:nth-child(even) td {
+                background: #f9f9f9 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            #printableArea .print-table tfoot td {
+                font-weight: bold !important;
+                background: #e9e9e9 !important;
+                border: 2px solid #000 !important;
+                font-size: 13px !important;
+                padding: 12px 8px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Notes Section */
+            #printableArea .details-section > div {
+                border: 1px solid #999 !important;
+                padding: 12px !important;
+                background: #f9f9f9 !important;
+                border-radius: 0 !important;
+                min-height: 50px !important;
+                font-size: 11px !important;
+                line-height: 1.6 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Signature Section */
+            #printableArea .print-signature-section {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1fr !important;
+                gap: 30px !important;
+                margin-top: 50px !important;
+                page-break-inside: avoid !important;
+            }
+            
+            #printableArea .print-signature-box {
+                text-align: center !important;
+                font-size: 11px !important;
+            }
+            
+            #printableArea .print-signature-box > div:first-child {
+                font-weight: bold !important;
+                margin-bottom: 5px !important;
+                color: #333 !important;
+            }
+            
+            #printableArea .print-signature-line {
+                border-top: 1px solid #000 !important;
+                margin-top: 70px !important;
+                padding-top: 8px !important;
+                font-size: 10px !important;
+            }
+            
+            /* Footer */
+            #printableArea .print-footer {
+                margin-top: 40px !important;
+                padding-top: 12px !important;
+                border-top: 2px double #333 !important;
+                font-size: 9px !important;
+                color: #666 !important;
+                text-align: center !important;
+                page-break-inside: avoid !important;
+            }
+            
+            #printableArea .print-footer > div {
+                color: #666 !important;
+            }
+            
+            #printableArea .print-footer > div:first-child {
+                font-weight: bold !important;
+                margin-bottom: 5px !important;
+                color: #333 !important;
+            }
+            
+            #printableArea .print-footer > div:last-child {
+                font-style: italic !important;
+                margin-top: 5px !important;
+            }
+        }
+        
+        /* Order Details Modal Styles */
+        .order-actions-bar {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .order-actions-bar .btn {
+            flex: 1;
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+        }
+        
+        .order-status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        .details-section {
+            margin-bottom: 25px;
+        }
+        
+        .details-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+        
+        .details-grid > div {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .details-grid strong {
+            color: #666;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .details-grid span {
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Stock Indicator Styles */
+        .stock-indicator {
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .stock-value {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: #495057;
+        }
+        
+        .stock-label {
+            display: block;
+            font-size: 10px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Stock level color coding */
+        .stock-indicator.stock-good {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: #28a745;
+        }
+        
+        .stock-indicator.stock-good .stock-value {
+            color: #155724;
+        }
+        
+        .stock-indicator.stock-medium {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            border-color: #ffc107;
+        }
+        
+        .stock-indicator.stock-medium .stock-value {
+            color: #856404;
+        }
+        
+        .stock-indicator.stock-low {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-color: #dc3545;
+        }
+        
+        .stock-indicator.stock-low .stock-value {
+            color: #721c24;
+        }
+        
+        .stock-indicator.stock-out {
+            background: linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%);
+            border-color: #6c757d;
+        }
+        
+        .stock-indicator.stock-out .stock-value {
+            color: #383d41;
+        }
+        
+        .stock-indicator.stock-out::after {
+            content: " (Out of Stock)";
+            display: block;
+            font-size: 9px;
+            color: #dc3545;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item active">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" data-i18n="nav.orders">Pesanan</h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                <button class="btn-icon" id="notificationBtn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Stats Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-primary">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalOrders">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="orders.totalOrders">Total Pesanan</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="pendingOrders">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="orders.pending">Pesanan Pending</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="completedToday">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="orders.completedToday">Selesai Hari Ini</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-info">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalRevenue">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="orders.revenue">Total Pendapatan</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card filters-card">
+                <div class="card-body">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <input type="text" id="searchInput" data-i18n-placeholder="orders.search" placeholder="Cari nomor SO atau pelanggan..." class="form-control" aria-label="Search orders">
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="statusFilter" class="form-control" aria-label="Filter status">
+                                <option value="" data-i18n="orders.allStatus">Semua Status</option>
+                                <option value="pending" data-i18n="orders.pending">Pending</option>
+                                <option value="confirmed" data-i18n="orders.confirmed">Dikonfirmasi</option>
+                                <option value="processing" data-i18n="orders.processing">Diproses</option>
+                                <option value="packed">Dikemas</option>
+                                <option value="shipped">Dikirim</option>
+                                <option value="delivered">Diterima</option>
+                                <option value="cancelled">Dibatalkan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="paymentFilter" class="form-control" aria-label="Filter by payment status">
+                                <option value="" data-i18n="orders.allPayment">All Payment Status</option>
+                                <option value="unpaid" data-i18n="orders.unpaid">Unpaid</option>
+                                <option value="partial" data-i18n="orders.partial">Partial</option>
+                                <option value="paid" data-i18n="orders.paid">Paid</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="customerFilter" class="form-control" aria-label="Filter by customer">
+                                <option value="" data-i18n="orders.allCustomers">All Customers</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-content">
+                        <h2 data-i18n="orders.list">Daftar Pesanan</h2>
+                    </div>
+                    <div class="card-header-actions orders-actions">
+                        <button class="btn btn-primary" onclick="openAddOrderModal()">
+                            <i class="fas fa-plus"></i> <span data-i18n="orders.add">Buat Pesanan</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> <span data-i18n="app.reset">Reset</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="orders.number">No SO</th>
+                                    <th data-i18n="orders.customer">Pelanggan</th>
+                                    <th data-i18n="orders.date">Tgl Pesan</th>
+                                    <th data-i18n="orders.deliveryDate">Tgl Kirim</th>
+                                    <th data-i18n="orders.total">Total</th>
+                                    <th data-i18n="app.status">Status</th>
+                                    <th data-i18n="orders.payment">Pembayaran</th>
+                                    <th data-i18n="app.actions">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-center">
+                                        <i class="fas fa-spinner fa-spin"></i> Memuat...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Add Sales Order Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="modalTitle">Create Sales Order</h2>
+                <button class="close-btn" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <form id="orderForm">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>SO Number *</label>
+                            <input type="text" id="soNumber" required class="form-control" placeholder="e.g. SO-20241002-001">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Customer *</label>
+                            <select id="customerId" required class="form-control" aria-label="Select customer">
+                                <option value="">Select Customer</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Order Date *</label>
+                            <input type="date" id="orderDate" required class="form-control" title="Order date">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Delivery Date *</label>
+                            <input type="date" id="deliveryDate" required class="form-control" title="Delivery date">
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3>Order Items</h3>
+                            <button type="button" class="btn btn-sm btn-success" onclick="addOrderItem()">
+                                <i class="fas fa-plus"></i> Add Item
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table" id="orderItemsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th style="width: 120px;">Stock</th>
+                                        <th style="width: 100px;">Quantity</th>
+                                        <th style="width: 120px;">Unit Price</th>
+                                        <th style="width: 100px;">Discount</th>
+                                        <th style="width: 120px;">Subtotal</th>
+                                        <th style="width: 80px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orderItemsBody">
+                                    <!-- Items will be added dynamically -->
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="5" class="text-right">Total:</th>
+                                        <th id="orderTotalAmount">Rp 0</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Shipping Address *</label>
+                        <textarea id="shippingAddress" required rows="3" class="form-control" placeholder="Full shipping address..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="notes" rows="2" class="form-control" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Order Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Sales Order Details</h2>
+                <button class="close-btn" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Printable Area -->
+                <div id="printableArea">
+                    <!-- Print Header -->
+                    <div class="print-header">
+                        <div class="print-company-name">FACTORY INVENTORY SYSTEM</div>
+                        <div class="print-document-title">SALES ORDER</div>
+                        <div>Document No: <span id="printSONumber"></span></div>
+                    </div>
+
+                    <!-- Order Information Grid -->
+                    <div class="print-info-grid">
+                        <div class="print-info-box">
+                            <h4>ORDER INFORMATION</h4>
+                            <div class="print-info-row"><strong>SO Number:</strong> <span id="detailSONumber"></span></div>
+                            <div class="print-info-row"><strong>Order Date:</strong> <span id="detailOrderDate"></span></div>
+                            <div class="print-info-row"><strong>Delivery Date:</strong> <span id="detailDeliveryDate"></span></div>
+                            <div class="print-info-row"><strong>Status:</strong> <span id="detailStatus" class="order-status-badge"></span></div>
+                            <div class="print-info-row"><strong>Payment Status:</strong> <span id="detailPaymentStatus" class="order-status-badge"></span></div>
+                        </div>
+                        <div class="print-info-box">
+                            <h4>CUSTOMER INFORMATION</h4>
+                            <div class="print-info-row"><strong>Customer Name:</strong> <span id="detailCustomer"></span></div>
+                            <div class="print-info-row"><strong>Phone:</strong> <span id="detailCustomerPhone"></span></div>
+                            <div class="print-info-row"><strong>Email:</strong> <span id="detailCustomerEmail"></span></div>
+                            <div class="print-info-row"><strong>Address:</strong> <span id="detailShippingAddress"></span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items Table -->
+                    <div class="details-section">
+                        <h3>ORDER ITEMS</h3>
+                        <div class="table-responsive">
+                            <table class="table print-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%;">No</th>
+                                        <th style="width: 35%;">Product</th>
+                                        <th style="width: 15%;">SKU</th>
+                                        <th style="width: 10%; text-align: right;">Qty</th>
+                                        <th style="width: 15%; text-align: right;">Unit Price</th>
+                                        <th style="width: 10%; text-align: right;">Discount</th>
+                                        <th style="width: 20%; text-align: right;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailItemsBody">
+                                    <tr><td colspan="7" class="text-center">No items</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="6" style="text-align: right; font-weight: bold;">TOTAL AMOUNT:</td>
+                                        <td style="text-align: right; font-weight: bold; font-size: 16px;" id="detailTotalAmount">Rp 0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Information -->
+                    <div class="details-section">
+                        <h3>NOTES & REMARKS</h3>
+                        <div>
+                            <span id="detailNotes">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Print Signature Section -->
+                    <div class="print-signature-section">
+                        <div class="print-signature-box">
+                            <div>Prepared By</div>
+                            <div class="print-signature-line">(_____________________)</div>
+                            <div>Name & Signature</div>
+                        </div>
+                        <div class="print-signature-box">
+                            <div>Approved By</div>
+                            <div class="print-signature-line">(_____________________)</div>
+                            <div>Name & Signature</div>
+                        </div>
+                        <div class="print-signature-box">
+                            <div>Received By</div>
+                            <div class="print-signature-line">(_____________________)</div>
+                            <div>Customer / Receiver</div>
+                        </div>
+                    </div>
+
+                    <!-- Print Footer -->
+                    <div class="print-footer">
+                        <div>Factory Inventory System | Generated on: <span id="printDate"></span></div>
+                        <div>This is a computer-generated document and does not require a signature unless stated otherwise.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailsModal()">
+                    <i class="fas fa-times"></i> Close
+                </button>
+                <button class="btn btn-primary" onclick="printOrder()">
+                    <i class="fas fa-print"></i> Print Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Update Order Status</h2>
+                <button class="close-btn" onclick="closeStatusModal()">&times;</button>
+            </div>
+            <form id="statusForm">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Order:</strong> <span id="statusSONumber"></span>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>New Status *</label>
+                            <select id="newStatus" required class="form-control" aria-label="Select new status">
+                                <option value="">Select Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="processing">Processing</option>
+                                <option value="packed">Packed</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Payment Status *</label>
+                            <select id="newPaymentStatus" required class="form-control" aria-label="Select payment status">
+                                <option value="unpaid">Unpaid</option>
+                                <option value="partial">Partial</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="statusNotes" rows="3" class="form-control" placeholder="Reason for status change..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeStatusModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Shipment Modal -->
+    <div id="shipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Shipment</h2>
+                <button class="close-btn" onclick="closeShipmentModal()">&times;</button>
+            </div>
+            <form id="shipmentForm">
+                <input type="hidden" id="shipmentOrderId">
+                
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="shipmentNumber">Shipment Number</label>
+                            <input type="text" id="shipmentNumber" class="form-control" readonly title="Auto-generated shipment number">
+                        </div>
+                        <div class="form-group">
+                            <label for="shipmentSONumber">SO Number</label>
+                            <input type="text" id="shipmentSONumber" class="form-control" readonly title="Sales Order Number">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="shipmentCustomer">Customer</label>
+                        <input type="text" id="shipmentCustomer" class="form-control" readonly title="Customer Name">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="shipmentCarrier">Carrier / Kurir *</label>
+                            <select id="shipmentCarrier" required class="form-control" title="Pilih Kurir">
+                                <option value="">Pilih Kurir</option>
+                                <option value="JNE">JNE</option>
+                                <option value="J&T">J&T Express</option>
+                                <option value="SiCepat">SiCepat</option>
+                                <option value="Anteraja">Anteraja</option>
+                                <option value="Ninja Express">Ninja Express</option>
+                                <option value="ID Express">ID Express</option>
+                                <option value="Lion Parcel">Lion Parcel</option>
+                                <option value="Pos Indonesia">Pos Indonesia</option>
+                                <option value="Gosend">Gosend</option>
+                                <option value="Grab Express">Grab Express</option>
+                                <option value="Lalamove">Lalamove</option>
+                                <option value="Self Pickup">Self Pickup</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tracking Number</label>
+                            <input type="text" id="trackingNumber" class="form-control" placeholder="e.g., JNE1234567890">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="shipmentDate">Shipment Date *</label>
+                            <input type="date" id="shipmentDate" required class="form-control" title="Tanggal Pengiriman">
+                        </div>
+                        <div class="form-group">
+                            <label for="estimatedDelivery">Estimated Delivery</label>
+                            <input type="date" id="estimatedDelivery" class="form-control" title="Estimasi Tanggal Tiba">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Shipping Address *</label>
+                        <textarea id="shipmentAddress" rows="3" required class="form-control" placeholder="Full shipping address..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="shipmentNotes" rows="2" class="form-control" placeholder="Special instructions, package details, etc..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeShipmentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-truck"></i> Create Shipment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/modules/loader.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/orders.js"></script>
+</body>
+</html>

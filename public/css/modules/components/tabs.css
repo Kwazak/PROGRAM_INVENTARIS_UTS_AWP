@@ -1,0 +1,147 @@
+/**
+ * Tabs Component Styles
+ * Tab navigation and panels
+ */
+
+.tabs {
+    margin-bottom: var(--spacing-lg);
+}
+
+.tab-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid var(--border);
+    gap: var(--spacing-sm);
+}
+
+.tab-item {
+    margin-bottom: -2px;
+}
+
+.tab-link {
+    display: block;
+    padding: 12px var(--spacing-lg);
+    color: var(--text-secondary);
+    text-decoration: none;
+    border: 2px solid transparent;
+    border-bottom: none;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    transition: all var(--transition-fast);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    background: none;
+}
+
+.tab-link:hover {
+    color: var(--primary);
+    background-color: var(--bg-secondary);
+}
+
+.tab-link.active {
+    color: var(--primary);
+    border-color: var(--border) var(--border) var(--bg-primary);
+    background-color: var(--bg-primary);
+    border-bottom-color: var(--bg-primary);
+}
+
+.tab-content {
+    display: none;
+    padding: var(--spacing-lg);
+    animation: fadeIn var(--transition-base);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Vertical Tabs */
+.tabs-vertical {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.tabs-vertical .tab-list {
+    flex-direction: column;
+    border-bottom: none;
+    border-right: 2px solid var(--border);
+    min-width: 200px;
+}
+
+.tabs-vertical .tab-item {
+    margin-bottom: 0;
+    margin-right: -2px;
+}
+
+.tabs-vertical .tab-link {
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    border-bottom: 2px solid transparent;
+    border-right: none;
+}
+
+.tabs-vertical .tab-link.active {
+    border-color: var(--border) var(--bg-primary) var(--border) var(--border);
+    border-right-color: var(--bg-primary);
+}
+
+.tabs-vertical .tab-content {
+    flex: 1;
+}
+
+/* Pills Style */
+.tabs-pills .tab-list {
+    border-bottom: none;
+}
+
+.tabs-pills .tab-link {
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+}
+
+.tabs-pills .tab-link.active {
+    background-color: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tab-list {
+        overflow-x: auto;
+        /* Removed deprecated -webkit-overflow-scrolling */
+    }
+    
+    .tab-link {
+        white-space: nowrap;
+        padding: 10px var(--spacing-md);
+        font-size: var(--font-size-sm);
+    }
+    
+    .tabs-vertical {
+        flex-direction: column;
+    }
+    
+    .tabs-vertical .tab-list {
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 2px solid var(--border);
+        min-width: auto;
+    }
+    
+    .tabs-vertical .tab-item {
+        margin-right: 0;
+        margin-bottom: -2px;
+    }
+    
+    .tabs-vertical .tab-link {
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        border-right: 2px solid transparent;
+        border-bottom: none;
+    }
+    
+    .tabs-vertical .tab-link.active {
+        border-color: var(--border) var(--border) var(--bg-primary);
+        border-bottom-color: var(--bg-primary);
+    }
+}

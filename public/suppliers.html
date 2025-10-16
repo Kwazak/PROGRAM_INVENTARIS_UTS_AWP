@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers Management - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item active">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers Management</span>
+            </h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                
+                <button class="btn-icon" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Stats Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-primary">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalSuppliers">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="suppliers.totalSuppliers">Total Suppliers</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="activeSuppliers">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="suppliers.activeSuppliers">Active Suppliers</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-info">
+                        <i class="fas fa-city"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalCities">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="suppliers.cities">Cities</div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Filters & Actions -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-filter"></i> <span data-i18n="app.filter">Filters</span></h2>
+                <button class="btn btn-primary" onclick="openAddSupplierModal()">
+                    <i class="fas fa-plus"></i> <span data-i18n="suppliers.add">Add Supplier</span>
+                </button>
+            </div>
+            
+            <div class="filters-row">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" data-i18n-placeholder="suppliers.search" placeholder="Search by company, contact, phone..." class="search-input">
+                </div>
+                
+                <select id="statusFilter" class="form-control" title="Filter by status" aria-label="Status filter">
+                    <option value="" data-i18n="suppliers.allStatus">All Status</option>
+                    <option value="active" data-i18n="app.active">Active</option>
+                    <option value="inactive" data-i18n="app.inactive">Inactive</option>
+                </select>
+                
+                <select id="cityFilter" class="form-control" title="Filter by city" aria-label="City filter">
+                    <option value="" data-i18n="suppliers.allCities">All Cities</option>
+                </select>
+                
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    <i class="fas fa-undo"></i> <span data-i18n="app.reset">Reset</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Suppliers Table -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> <span data-i18n="suppliers.list">Suppliers List</span></h2>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="suppliers.code">Supplier Code</th>
+                            <th data-i18n="suppliers.name">Company Name</th>
+                            <th data-i18n="suppliers.contact">Contact Person</th>
+                            <th data-i18n="suppliers.phone">Phone</th>
+                            <th data-i18n="suppliers.email">Email</th>
+                            <th data-i18n="suppliers.city">City</th>
+                            <th data-i18n="suppliers.payment">Payment Terms</th>
+                            <th data-i18n="suppliers.leadTime">Lead Time</th>
+                            <th data-i18n="app.status">Status</th>
+                            <th data-i18n="app.actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliersTableBody">
+                        <tr><td colspan="10" class="text-center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Supplier Modal -->
+    <div id="supplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Supplier</h2>
+                <button class="close-btn" onclick="closeSupplierModal()">&times;</button>
+            </div>
+            <form id="supplierForm">
+                <input type="hidden" id="supplierId">
+                
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Supplier Code</label>
+                            <input type="text" id="supplierCode" class="form-control" readonly title="Auto-generated supplier code" aria-label="Supplier code">
+                            <small>Auto-generated</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="status" class="form-control" title="Select status" aria-label="Status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Company Name *</label>
+                        <input type="text" id="companyName" required class="form-control" placeholder="PT Example Company">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contact Person *</label>
+                            <input type="text" id="contactPerson" required class="form-control" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="tel" id="phone" required class="form-control" placeholder="081234567890">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="supplier@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Address *</label>
+                        <textarea id="address" rows="2" required class="form-control" placeholder="Jl. Example No. 123"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City *</label>
+                            <input type="text" id="city" required class="form-control" placeholder="Jakarta">
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentTerms">Payment Terms *</label>
+                            <select id="paymentTerms" required class="form-control" title="Select Payment Terms">
+                                <option value="">Select Payment Terms</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Net 7">Net 7 Days</option>
+                                <option value="Net 14">Net 14 Days</option>
+                                <option value="Net 30">Net 30 Days</option>
+                                <option value="Net 45">Net 45 Days</option>
+                                <option value="Net 60">Net 60 Days</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Lead Time (Days)</label>
+                        <input type="number" id="leadTimeDays" min="0" class="form-control" placeholder="7">
+                        <small>Estimated delivery time in days</small>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeSupplierModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Supplier
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Supplier Details</h2>
+                <button class="close-btn" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="details-grid">
+                    <div><strong>Supplier Code:</strong> <span id="detailCode"></span></div>
+                    <div><strong>Status:</strong> <span id="detailStatus"></span></div>
+                    <div><strong>Company Name:</strong> <span id="detailCompany"></span></div>
+                    <div><strong>Contact Person:</strong> <span id="detailContact"></span></div>
+                    <div><strong>Phone:</strong> <span id="detailPhone"></span></div>
+                    <div><strong>Email:</strong> <span id="detailEmail"></span></div>
+                    <div><strong>City:</strong> <span id="detailCity"></span></div>
+                    <div><strong>Payment Terms:</strong> <span id="detailPayment"></span></div>
+                    <div><strong>Lead Time:</strong> <span id="detailLeadTime"></span></div>
+                </div>
+                <div class="form-group mt-20">
+                    <strong>Address:</strong>
+                    <p id="detailAddress" class="mt-5"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let currentSupplierId = null;
+        let allSuppliers = [];
+
+        // Sidebar Toggle Function (SAME AS DASHBOARD)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        // Logout Function (SAME AS DASHBOARD)
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserInfo();
+            loadSuppliers();
+        });
+
+        // Load user info
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('userName').textContent = user.full_name;
+                document.getElementById('userRole').textContent = user.role.replace('_', ' ').toUpperCase();
+            }
+        }
+
+        // Load suppliers
+        async function loadSuppliers() {
+            try {
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const status = document.getElementById('statusFilter').value;
+                const city = document.getElementById('cityFilter').value;
+                
+                const response = await fetchAPI('/suppliers');
+                
+                if (response.success) {
+                    allSuppliers = response.data;
+                    
+                    // Filter suppliers
+                    let filtered = allSuppliers.filter(s => {
+                        const matchSearch = !search || 
+                            s.company_name.toLowerCase().includes(search) ||
+                            (s.contact_person && s.contact_person.toLowerCase().includes(search)) ||
+                            (s.phone && s.phone.includes(search));
+                        const matchStatus = !status || s.status === status;
+                        const matchCity = !city || s.city === city;
+                        return matchSearch && matchStatus && matchCity;
+                    });
+                    
+                    displaySuppliers(filtered);
+                    updateStats(allSuppliers);
+                    loadCityFilter(allSuppliers);
+                }
+            } catch (error) {
+                console.error('Error loading suppliers:', error);
+                showToast('Failed to load suppliers', 'error');
+            }
+        }
+
+        // Display suppliers
+        function displaySuppliers(suppliers) {
+            const tbody = document.getElementById('suppliersTableBody');
+            
+            if (suppliers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center">No suppliers found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = suppliers.map(s => `
+                <tr>
+                    <td><strong>${s.supplier_code || '-'}</strong></td>
+                    <td>${s.company_name}</td>
+                    <td>${s.contact_person || '-'}</td>
+                    <td>${s.phone || '-'}</td>
+                    <td>${s.email || '-'}</td>
+                    <td>${s.city || '-'}</td>
+                    <td>${s.payment_terms || '-'}</td>
+                    <td>${s.lead_time_days ? s.lead_time_days + ' days' : '-'}</td>
+                    <td>${getStatusBadge(s.status)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-info" onclick="viewSupplierDetails(${s.id})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="editSupplier(${s.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSupplier(${s.id}, '${s.company_name}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'active': '<span class="badge badge-success">Active</span>',
+                'inactive': '<span class="badge badge-secondary">Inactive</span>'
+            };
+            return badges[status] || badges['active'];
+        }
+
+        // Update statistics
+        function updateStats(suppliers) {
+            const active = suppliers.filter(s => s.status === 'active').length;
+            const cities = [...new Set(suppliers.map(s => s.city).filter(c => c))].length;
+            
+            document.getElementById('totalSuppliers').textContent = suppliers.length;
+            document.getElementById('activeSuppliers').textContent = active;
+            document.getElementById('totalCities').textContent = cities;
+        }
+
+        // Load city filter
+        function loadCityFilter(suppliers) {
+            const cities = [...new Set(suppliers.map(s => s.city).filter(c => c))].sort();
+            const select = document.getElementById('cityFilter');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">All Cities</option>' + 
+                cities.map(c => `<option value="${c}">${c}</option>`).join('');
+            
+            if (currentValue) select.value = currentValue;
+        }
+
+        // Search and filter
+        document.getElementById('searchInput').addEventListener('input', debounce(loadSuppliers, 500));
+        document.getElementById('statusFilter').addEventListener('change', loadSuppliers);
+        document.getElementById('cityFilter').addEventListener('change', loadSuppliers);
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('cityFilter').value = '';
+            loadSuppliers();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // Open add supplier modal
+        async function openAddSupplierModal() {
+            currentSupplierId = null;
+            document.getElementById('modalTitle').textContent = 'Add Supplier';
+            document.getElementById('supplierForm').reset();
+            document.getElementById('status').value = 'active';
+            
+            // Auto-fill supplier code
+            try {
+                const response = await fetchAPI('/auto-number/supplier-code');
+                if (response.success) {
+                    document.getElementById('supplierCode').value = response.number;
+                }
+            } catch (error) {
+                console.error('Error getting supplier code:', error);
+            }
+            
+            document.getElementById('supplierModal').style.display = 'flex';
+        }
+
+        function closeSupplierModal() {
+            document.getElementById('supplierModal').style.display = 'none';
+            currentSupplierId = null;
+        }
+
+        // Edit supplier
+        async function editSupplier(id) {
+            try {
+                const response = await fetchAPI(`/suppliers/${id}`);
+                if (response.success) {
+                    const supplier = response.data;
+                    currentSupplierId = id;
+                    
+                    document.getElementById('modalTitle').textContent = 'Edit Supplier';
+                    document.getElementById('supplierCode').value = supplier.supplier_code || '';
+                    document.getElementById('companyName').value = supplier.company_name;
+                    document.getElementById('contactPerson').value = supplier.contact_person || '';
+                    document.getElementById('phone').value = supplier.phone || '';
+                    document.getElementById('email').value = supplier.email || '';
+                    document.getElementById('address').value = supplier.address || '';
+                    document.getElementById('city').value = supplier.city || '';
+                    document.getElementById('paymentTerms').value = supplier.payment_terms || '';
+                    document.getElementById('leadTimeDays').value = supplier.lead_time_days || '';
+                    document.getElementById('status').value = supplier.status || 'active';
+                    
+                    document.getElementById('supplierModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading supplier:', error);
+                showToast('Failed to load supplier data', 'error');
+            }
+        }
+
+        // Save supplier
+        document.getElementById('supplierForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const supplierData = {
+                company_name: document.getElementById('companyName').value,
+                contact_person: document.getElementById('contactPerson').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value || null,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                payment_terms: document.getElementById('paymentTerms').value,
+                lead_time_days: document.getElementById('leadTimeDays').value ? parseInt(document.getElementById('leadTimeDays').value) : null,
+                status: document.getElementById('status').value
+            };
+            
+            try {
+                let response;
+                if (currentSupplierId) {
+                    response = await fetchAPI(`/suppliers/${currentSupplierId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(supplierData)
+                    });
+                } else {
+                    response = await fetchAPI('/suppliers', {
+                        method: 'POST',
+                        body: JSON.stringify(supplierData)
+                    });
+                }
+                
+                if (response.success) {
+                    showToast(response.message, 'success');
+                    closeSupplierModal();
+                    loadSuppliers();
+                } else {
+                    showToast(response.message || 'Failed to save supplier', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving supplier:', error);
+                showToast('Failed to save supplier', 'error');
+            }
+        });
+
+        // View supplier details
+        async function viewSupplierDetails(id) {
+            try {
+                const response = await fetchAPI(`/suppliers/${id}`);
+                if (response.success) {
+                    const s = response.data;
+                    
+                    document.getElementById('detailCode').textContent = s.supplier_code || '-';
+                    document.getElementById('detailStatus').innerHTML = getStatusBadge(s.status);
+                    document.getElementById('detailCompany').textContent = s.company_name;
+                    document.getElementById('detailContact').textContent = s.contact_person || '-';
+                    document.getElementById('detailPhone').textContent = s.phone || '-';
+                    document.getElementById('detailEmail').textContent = s.email || '-';
+                    document.getElementById('detailCity').textContent = s.city || '-';
+                    document.getElementById('detailPayment').textContent = s.payment_terms || '-';
+                    document.getElementById('detailLeadTime').textContent = s.lead_time_days ? s.lead_time_days + ' days' : '-';
+                    document.getElementById('detailAddress').textContent = s.address || '-';
+                    
+                    document.getElementById('detailsModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading supplier details:', error);
+                showToast('Failed to load supplier details', 'error');
+            }
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        // Delete supplier
+        async function deleteSupplier(id, name) {
+            if (!confirm(`Are you sure you want to delete supplier "${name}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetchAPI(`/suppliers/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.success) {
+                    showToast(response.message, 'success');
+                    loadSuppliers();
+                } else {
+                    showToast(response.message || 'Failed to delete supplier', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting supplier:', error);
+                showToast('Failed to delete supplier', 'error');
+            }
+        }
+    </script>
+    <script src="/js/modules/loader.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/i18n.js"></script>
+</body>
+</html>

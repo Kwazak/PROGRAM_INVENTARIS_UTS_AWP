@@ -1,0 +1,675 @@
+/**
+ * FORM COMPONENT STYLES - OPTIMIZED LAYOUT
+ * Improved structure, spacing, and visual hierarchy for forms
+ */
+
+/* ============================================
+   FORM STRUCTURE & SECTIONS
+   ============================================ */
+
+.form-section {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-8);
+    border-bottom: var(--border-width-1) solid var(--border);
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.form-section-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-2);
+    color: var(--text-primary);
+}
+
+.form-section-description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-6);
+}
+
+/* ============================================
+   FORM GROUP - Improved spacing
+   ============================================ */
+
+.form-group {
+    margin-bottom: var(--space-5);
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-weight: var(--font-medium);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--text-primary);
+}
+
+.form-group label.required::after {
+    content: '*';
+    color: var(--danger);
+    margin-left: var(--space-1);
+}
+
+.form-group .form-hint {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    line-height: var(--leading-normal);
+}
+
+/* ============================================
+   FORM CONTROLS - Consistent sizing
+   ============================================ */
+
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="search"],
+textarea,
+select {
+    display: block;
+    width: 100%;
+    height: var(--input-height-md); /* 40px consistent height */
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    border: var(--border-width-1) solid var(--border);
+    border-radius: var(--radius-md);
+    transition: var(--transition-all);
+    appearance: none;
+}
+
+/* Focus State */
+.form-control:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Disabled State */
+.form-control:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: var(--bg-secondary);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Read-only State */
+.form-control:read-only,
+input:read-only {
+    background-color: var(--bg-secondary);
+    cursor: default;
+}
+
+/* Invalid State */
+.form-control.is-invalid,
+input.is-invalid {
+    border-color: var(--danger);
+}
+
+.form-control.is-invalid:focus,
+input.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Valid State */
+.form-control.is-valid,
+input.is-valid {
+    border-color: var(--success);
+}
+
+.form-control.is-valid:focus,
+input.is-valid:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Validation Messages */
+.invalid-feedback,
+.valid-feedback {
+    display: none;
+    margin-top: var(--space-1);
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+}
+
+.invalid-feedback {
+    color: var(--danger);
+}
+
+.valid-feedback {
+    color: var(--success);
+}
+
+.is-invalid ~ .invalid-feedback,
+.is-valid ~ .valid-feedback {
+    display: block;
+}
+
+/* ============================================
+   TEXTAREA - Proper sizing
+   ============================================ */
+
+textarea {
+    height: auto;
+    min-height: 120px;
+    resize: vertical;
+    padding: var(--space-3);
+    line-height: var(--leading-relaxed);
+}
+
+textarea.form-control-sm {
+    min-height: 80px;
+}
+
+textarea.form-control-lg {
+    min-height: 160px;
+}
+
+/* ============================================
+   SELECT - Better styling
+   ============================================ */
+
+select {
+    cursor: pointer;
+    padding-right: var(--space-10);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right var(--space-3) center;
+    background-repeat: no-repeat;
+    background-size: var(--icon-sm);
+}
+
+select[multiple] {
+    height: auto;
+    padding-right: var(--space-3);
+    background-image: none;
+}
+
+/* ============================================
+   INPUT SIZES
+   ============================================ */
+
+.form-control-sm,
+input.form-control-sm,
+select.form-control-sm {
+    height: var(--input-height-sm);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+}
+
+.form-control-lg,
+input.form-control-lg,
+select.form-control-lg {
+    height: var(--input-height-lg);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+}
+
+/* ============================================
+   CHECKBOX & RADIO - Touch-friendly
+   ============================================ */
+
+input[type="checkbox"],
+input[type="radio"] {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.form-check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    padding: var(--space-2);
+    border-radius: var(--radius-base);
+    transition: var(--transition-colors);
+}
+
+.form-check:hover {
+    background-color: var(--bg-secondary);
+}
+
+.form-check input {
+    margin-top: var(--space-1); /* Align with first line of text */
+}
+
+.form-check label {
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    flex: 1;
+}
+
+.form-check-inline {
+    display: inline-flex;
+    margin-right: var(--space-4);
+}
+
+/* ============================================
+   INPUT GROUP - Better composition
+   ============================================ */
+
+.input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.input-group .form-control {
+    flex: 1;
+    border-radius: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.input-group .form-control:focus {
+    z-index: 2;
+}
+
+.input-group .form-control:first-child {
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+}
+
+.input-group .form-control:last-child {
+    border-top-right-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+.input-group-prepend,
+.input-group-append {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    border: var(--border-width-1) solid var(--border);
+    white-space: nowrap;
+}
+
+.input-group-prepend {
+    border-right: none;
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+}
+
+.input-group-append {
+    border-left: none;
+    border-top-right-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+/* ============================================
+   FORM ROW - Grid layout for forms
+   ============================================ */
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.form-col {
+    grid-column: span 12;
+}
+
+.form-col-6 {
+    grid-column: span 6;
+}
+
+.form-col-4 {
+    grid-column: span 4;
+}
+
+.form-col-3 {
+    grid-column: span 3;
+}
+
+.form-col-2 {
+    grid-column: span 2;
+}
+
+/* Mobile: All columns full width */
+@media (max-width: 767px) {
+    .form-col,
+    .form-col-6,
+    .form-col-4,
+    .form-col-3,
+    .form-col-2 {
+        grid-column: span 12;
+    }
+    
+    /* Stack form sections vertically on mobile */
+    .form-row {
+        gap: var(--space-4);
+    }
+    
+    /* Adjust form group spacing on mobile */
+    .form-group {
+        margin-bottom: var(--space-4);
+    }
+    
+    /* Make buttons full width on mobile */
+    .btn {
+        width: 100%;
+        margin-bottom: var(--space-2);
+    }
+    
+    .btn-group .btn {
+        width: auto;
+        margin-bottom: 0;
+    }
+}
+
+/* Small mobile: Extra spacing adjustments */
+@media (max-width: 575px) {
+    .form-row {
+        gap: var(--space-3);
+    }
+    
+    .form-group {
+        margin-bottom: var(--space-3);
+    }
+    
+    .form-control,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="date"],
+    input[type="time"],
+    input[type="datetime-local"],
+    input[type="search"],
+    textarea,
+    select {
+        height: var(--input-height-lg); /* Larger touch targets */
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--text-base);
+    }
+    
+    /* Better spacing for form sections on small screens */
+    .form-section {
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-6);
+    }
+}
+
+/* ============================================
+   FILE INPUT - Better styling
+   ============================================ */
+
+input[type="file"] {
+    height: auto;
+    padding: var(--space-2);
+    font-size: var(--text-sm);
+}
+
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-input-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background-color: var(--bg-secondary);
+    border: var(--border-width-1) solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-colors);
+}
+
+.file-input-label:hover {
+    background-color: var(--bg-tertiary);
+}
+
+/* ============================================
+   IMAGE UPLOAD AREA - Preview
+   ============================================ */
+
+.image-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: var(--space-6);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-secondary);
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-colors);
+}
+
+.image-upload-area:hover {
+    border-color: var(--primary);
+    background-color: var(--bg-tertiary);
+}
+
+.image-upload-area.has-image {
+    border-style: solid;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 300px;
+    margin-bottom: var(--space-4);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.image-upload-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-top: var(--space-2);
+}
+
+.image-upload-icon {
+    font-size: var(--icon-xl);
+    color: var(--text-muted);
+    margin-bottom: var(--space-3);
+}
+
+/* ============================================
+   SEARCH BAR - Better layout
+   ============================================ */
+
+.search-bar {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.search-bar input {
+    padding-left: var(--space-10);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E");
+    background-position: left var(--space-3) center;
+    background-repeat: no-repeat;
+    background-size: var(--icon-sm);
+}
+
+.search-bar-icon {
+    position: absolute;
+    left: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.search-bar-clear {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: var(--space-1);
+    opacity: 0;
+    transition: var(--transition-opacity);
+}
+
+.search-bar input:not(:placeholder-shown) ~ .search-bar-clear {
+    opacity: 1;
+}
+
+/* ============================================
+   FORM ACTIONS - Button positioning
+   ============================================ */
+
+.form-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    justify-content: flex-end;
+    padding-top: var(--space-6);
+    margin-top: var(--space-8);
+    border-top: var(--border-width-1) solid var(--border);
+}
+
+.form-actions.align-left {
+    justify-content: flex-start;
+}
+
+.form-actions.align-center {
+    justify-content: center;
+}
+
+.form-actions.space-between {
+    justify-content: space-between;
+}
+
+/* Mobile: Stack buttons */
+@media (max-width: 575px) {
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   FORM HELP TEXT
+   ============================================ */
+
+.form-text {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    line-height: var(--leading-normal);
+}
+
+/* ============================================
+   FLOATING LABELS (Optional)
+   ============================================ */
+
+.form-floating {
+    position: relative;
+}
+
+.form-floating > .form-control {
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-2);
+}
+
+.form-floating > label {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    padding: 0 var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: var(--transition-all);
+    background-color: var(--bg-primary);
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    top: calc(var(--space-1) * -1);
+    left: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--primary);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 767px) {
+    .form-group {
+        margin-bottom: var(--space-4);
+    }
+    
+    .form-section {
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-6);
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group .form-control,
+    .input-group-prepend,
+    .input-group-append {
+        border-radius: var(--radius-md) !important;
+    }
+    
+    .input-group-prepend,
+    .input-group-append {
+        border: var(--border-width-1) solid var(--border);
+    }
+}

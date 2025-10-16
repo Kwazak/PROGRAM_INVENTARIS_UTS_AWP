@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers Management - Factory Inventory System</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item active">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            <a href="/qc-inspection.html" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>QC Inspection</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers Management</span>
+            </h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                
+                <button class="btn-icon" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Stats Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="totalCustomers">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="customers.totalCustomers">Total Customers</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="activeCustomers">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="customers.activeCustomers">Active Customers</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-info">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="corporateCustomers">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="customers.corporate">Corporate</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-warning">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="retailCustomers">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="customers.retail">Retail</div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Filters & Actions -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-filter"></i> <span data-i18n="app.filter">Filters</span></h2>
+                <button class="btn btn-primary" onclick="openAddCustomerModal()">
+                    <i class="fas fa-plus"></i> <span data-i18n="customers.add">Add Customer</span>
+                </button>
+            </div>
+            
+            <div class="filters-row">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" data-i18n-placeholder="customers.search" placeholder="Search by company, contact, phone..." class="search-input">
+                </div>
+                
+                <select id="typeFilter" class="form-control" title="Filter by Customer Type">
+                    <option value="" data-i18n="customers.allTypes">All Types</option>
+                    <option value="retail" data-i18n="customers.retail">Retail</option>
+                    <option value="corporate" data-i18n="customers.corporate">Corporate</option>
+                    <option value="distributor" data-i18n="customers.distributor">Distributor</option>
+                </select>
+                
+                <select id="statusFilter" class="form-control" title="Filter by Status">
+                    <option value="" data-i18n="customers.allStatus">All Status</option>
+                    <option value="active" data-i18n="app.active">Active</option>
+                    <option value="inactive" data-i18n="app.inactive">Inactive</option>
+                </select>
+                
+                <select id="cityFilter" class="form-control" title="Filter by City">
+                    <option value="" data-i18n="customers.allCities">All Cities</option>
+                </select>
+                
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    <i class="fas fa-undo"></i> <span data-i18n="app.reset">Reset</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Customers Table -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> <span data-i18n="customers.list">Customers List</span></h2>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="customers.code">Customer Code</th>
+                            <th data-i18n="customers.name">Company Name</th>
+                            <th data-i18n="customers.contact">Contact Person</th>
+                            <th data-i18n="customers.phone">Phone</th>
+                            <th data-i18n="customers.email">Email</th>
+                            <th data-i18n="customers.city">City</th>
+                            <th data-i18n="customers.type">Type</th>
+                            <th data-i18n="customers.creditLimit">Credit Limit</th>
+                            <th data-i18n="app.status">Status</th>
+                            <th data-i18n="app.actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTableBody">
+                        <tr><td colspan="10" class="text-center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Customer Modal -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Customer</h2>
+                <button class="close-btn" onclick="closeCustomerModal()">&times;</button>
+            </div>
+            <form id="customerForm">
+                <input type="hidden" id="customerId">
+                
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerCode">Customer Code</label>
+                            <input type="text" id="customerCode" class="form-control" readonly title="Auto-generated customer code">
+                            <small>Auto-generated</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" class="form-control" title="Select Status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Company Name *</label>
+                        <input type="text" id="companyName" required class="form-control" placeholder="PT Example Company / Toko ABC">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contact Person *</label>
+                            <input type="text" id="contactPerson" required class="form-control" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="tel" id="phone" required class="form-control" placeholder="081234567890">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="customer@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Address *</label>
+                        <textarea id="address" rows="2" required class="form-control" placeholder="Jl. Example No. 123"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City *</label>
+                            <input type="text" id="city" required class="form-control" placeholder="Jakarta">
+                        </div>
+                        <div class="form-group">
+                            <label>Province</label>
+                            <input type="text" id="province" class="form-control" placeholder="DKI Jakarta">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerType">Customer Type *</label>
+                            <select id="customerType" required class="form-control" title="Select Customer Type">
+                                <option value="">Select Type</option>
+                                <option value="retail">Retail</option>
+                                <option value="corporate">Corporate</option>
+                                <option value="distributor">Distributor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentTerms">Payment Terms *</label>
+                            <select id="paymentTerms" required class="form-control" title="Select Payment Terms">
+                                <option value="">Select Payment Terms</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Net 7">Net 7 Days</option>
+                                <option value="Net 14">Net 14 Days</option>
+                                <option value="Net 30">Net 30 Days</option>
+                                <option value="Net 45">Net 45 Days</option>
+                                <option value="Net 60">Net 60 Days</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Credit Limit (Rp)</label>
+                        <input type="number" id="creditLimit" min="0" step="1000" class="form-control" placeholder="50000000">
+                        <small>Leave empty for unlimited credit</small>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCustomerModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Customer Details</h2>
+                <button class="close-btn" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="details-grid">
+                    <div><strong>Customer Code:</strong> <span id="detailCode"></span></div>
+                    <div><strong>Status:</strong> <span id="detailStatus"></span></div>
+                    <div><strong>Company Name:</strong> <span id="detailCompany"></span></div>
+                    <div><strong>Contact Person:</strong> <span id="detailContact"></span></div>
+                    <div><strong>Phone:</strong> <span id="detailPhone"></span></div>
+                    <div><strong>Email:</strong> <span id="detailEmail"></span></div>
+                    <div><strong>City:</strong> <span id="detailCity"></span></div>
+                    <div><strong>Province:</strong> <span id="detailProvince"></span></div>
+                    <div><strong>Customer Type:</strong> <span id="detailType"></span></div>
+                    <div><strong>Payment Terms:</strong> <span id="detailPayment"></span></div>
+                    <div><strong>Credit Limit:</strong> <span id="detailCredit"></span></div>
+                </div>
+                <div class="form-group mt-20">
+                    <strong>Address:</strong>
+                    <p id="detailAddress" class="mt-5"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let currentCustomerId = null;
+        let allCustomers = [];
+
+        // Sidebar Toggle Function (SAME AS DASHBOARD)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        // Logout Function (SAME AS DASHBOARD)
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserInfo();
+            loadCustomers();
+        });
+
+        // Load user info
+        function loadUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('userName').textContent = user.full_name;
+                document.getElementById('userRole').textContent = user.role.replace('_', ' ').toUpperCase();
+            }
+        }
+
+        // Load customers
+        async function loadCustomers() {
+            try {
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const type = document.getElementById('typeFilter').value;
+                const status = document.getElementById('statusFilter').value;
+                const city = document.getElementById('cityFilter').value;
+                
+                const response = await fetchAPI('/customers');
+                
+                if (response.success) {
+                    // ✅ Console logging for debugging
+                    console.log('✅ Customers loaded successfully:', response.data);
+                    if (response.data.length > 0) {
+                        console.log('📊 First customer sample:', {
+                            id: response.data[0].id,
+                            code: response.data[0].customer_code,
+                            company: response.data[0].company_name,
+                            type: response.data[0].customer_type,
+                            credit_limit: response.data[0].credit_limit,
+                            status: response.data[0].status
+                        });
+                    }
+                    console.log(`📈 Total customers loaded: ${response.data.length}`);
+                    
+                    allCustomers = response.data;
+                    
+                    // Filter customers with safe null checks
+                    let filtered = allCustomers.filter(c => {
+                        const matchSearch = !search || 
+                            (c.company_name && c.company_name.toLowerCase().includes(search)) ||
+                            (c.customer_code && c.customer_code.toLowerCase().includes(search)) ||
+                            (c.contact_person && c.contact_person.toLowerCase().includes(search)) ||
+                            (c.phone && c.phone.toLowerCase().includes(search)) ||
+                            (c.email && c.email.toLowerCase().includes(search));
+                        const matchType = !type || c.customer_type === type;
+                        const matchStatus = !status || c.status === status;
+                        const matchCity = !city || c.city === city;
+                        return matchSearch && matchType && matchStatus && matchCity;
+                    });
+                    
+                    console.log(`🔍 Filtered customers: ${filtered.length}`);
+                    
+                    displayCustomers(filtered);
+                    updateStats(allCustomers);
+                    loadCityFilter(allCustomers);
+                }
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                showToast('Failed to load customers', 'error');
+            }
+        }
+
+        // Display customers
+        function displayCustomers(customers) {
+            const tbody = document.getElementById('customersTableBody');
+            
+            if (customers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="text-center">
+                            <div class="empty-state" style="padding: 40px 20px;">
+                                <i class="fas fa-users" style="font-size: 48px; color: var(--gray); margin-bottom: 16px;"></i>
+                                <h3 style="color: var(--secondary); margin-bottom: 8px;">No Customers Found</h3>
+                                <p style="color: var(--gray); margin-bottom: 20px;">Try adjusting your filters or add a new customer</p>
+                                <button class="btn btn-primary" onclick="openAddCustomerModal()">
+                                    <i class="fas fa-plus"></i> Add First Customer
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = customers.map(c => {
+                // ✅ Explicit null/undefined checks for better data handling
+                const customerCode = c.customer_code || '-';
+                const companyName = c.company_name || '-';
+                const contactPerson = c.contact_person || '-';
+                const phone = c.phone || '-';
+                const email = c.email || '-';
+                const city = c.city || '-';
+                // Credit limit: show '-' if null/undefined, show formatted value if set (even if 0)
+                const creditLimit = (c.credit_limit !== null && c.credit_limit !== undefined) 
+                    ? formatCurrency(c.credit_limit) 
+                    : '-';
+                
+                return `
+                    <tr>
+                        <td><strong>${customerCode}</strong></td>
+                        <td>${companyName}</td>
+                        <td>${contactPerson}</td>
+                        <td>${phone}</td>
+                        <td>${email}</td>
+                        <td>${city}</td>
+                        <td>${getTypeBadge(c.customer_type)}</td>
+                        <td>${creditLimit}</td>
+                        <td>${getStatusBadge(c.status)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-info" onclick="viewCustomerDetails(${c.id})" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-primary" onclick="editCustomer(${c.id})" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCustomer(${c.id}, '${companyName.replace(/'/g, "\\'")}'" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Get type badge
+        function getTypeBadge(type) {
+            const badges = {
+                'retail': '<span class="badge badge-info">Retail</span>',
+                'corporate': '<span class="badge badge-primary">Corporate</span>',
+                'distributor': '<span class="badge badge-warning">Distributor</span>'
+            };
+            return badges[type] || '<span class="badge badge-secondary">-</span>';
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'active': '<span class="badge badge-success">Active</span>',
+                'inactive': '<span class="badge badge-secondary">Inactive</span>'
+            };
+            return badges[status] || badges['active'];
+        }
+
+        // Update statistics
+        function updateStats(customers) {
+            const active = customers.filter(c => c.status === 'active').length;
+            const corporate = customers.filter(c => c.customer_type === 'corporate').length;
+            const retail = customers.filter(c => c.customer_type === 'retail').length;
+            
+            document.getElementById('totalCustomers').textContent = customers.length;
+            document.getElementById('activeCustomers').textContent = active;
+            document.getElementById('corporateCustomers').textContent = corporate;
+            document.getElementById('retailCustomers').textContent = retail;
+        }
+
+        // Load city filter
+        function loadCityFilter(customers) {
+            const cities = [...new Set(customers.map(c => c.city).filter(c => c))].sort();
+            const select = document.getElementById('cityFilter');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">All Cities</option>' + 
+                cities.map(c => `<option value="${c}">${c}</option>`).join('');
+            
+            if (currentValue) select.value = currentValue;
+        }
+
+        // Search and filter
+        document.getElementById('searchInput').addEventListener('input', debounce(loadCustomers, 500));
+        document.getElementById('typeFilter').addEventListener('change', loadCustomers);
+        document.getElementById('statusFilter').addEventListener('change', loadCustomers);
+        document.getElementById('cityFilter').addEventListener('change', loadCustomers);
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('cityFilter').value = '';
+            loadCustomers();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // ✅ Client-side validation function
+        function validateCustomerForm() {
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const creditLimit = document.getElementById('creditLimit').value.trim();
+            const companyName = document.getElementById('companyName').value.trim();
+            
+            // Company name validation
+            if (!companyName) {
+                showToast('Company name is required', 'error');
+                document.getElementById('companyName').focus();
+                return false;
+            }
+            
+            // Email validation (if provided)
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showToast('Please enter a valid email address', 'error');
+                document.getElementById('email').focus();
+                return false;
+            }
+            
+            // Phone validation (if provided) - allows digits, spaces, dashes, plus, parentheses
+            if (phone && !/^[\d\s\-\+\(\)]+$/.test(phone)) {
+                showToast('Please enter a valid phone number', 'error');
+                document.getElementById('phone').focus();
+                return false;
+            }
+            
+            // Credit limit validation (if provided)
+            if (creditLimit && (isNaN(creditLimit) || parseFloat(creditLimit) < 0)) {
+                showToast('Credit limit must be a positive number', 'error');
+                document.getElementById('creditLimit').focus();
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Open add customer modal
+        async function openAddCustomerModal() {
+            currentCustomerId = null;
+            document.getElementById('modalTitle').textContent = 'Add Customer';
+            document.getElementById('customerForm').reset();
+            document.getElementById('status').value = 'active';
+            
+            // Auto-fill customer code
+            try {
+                const response = await fetchAPI('/auto-number/customer-code');
+                if (response.success) {
+                    document.getElementById('customerCode').value = response.number;
+                }
+            } catch (error) {
+                console.error('Error getting customer code:', error);
+            }
+            
+            document.getElementById('customerModal').style.display = 'flex';
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('customerModal').style.display = 'none';
+            currentCustomerId = null;
+        }
+
+        // Edit customer
+        async function editCustomer(id) {
+            try {
+                const response = await fetchAPI(`/customers/${id}`);
+                if (response.success) {
+                    const customer = response.data;
+                    currentCustomerId = id;
+                    
+                    document.getElementById('modalTitle').textContent = 'Edit Customer';
+                    document.getElementById('customerCode').value = customer.customer_code || '';
+                    document.getElementById('companyName').value = customer.company_name;
+                    document.getElementById('contactPerson').value = customer.contact_person || '';
+                    document.getElementById('phone').value = customer.phone || '';
+                    document.getElementById('email').value = customer.email || '';
+                    document.getElementById('address').value = customer.address || '';
+                    document.getElementById('city').value = customer.city || '';
+                    document.getElementById('province').value = customer.province || '';
+                    document.getElementById('customerType').value = customer.customer_type || '';
+                    document.getElementById('paymentTerms').value = customer.payment_terms || '';
+                    document.getElementById('creditLimit').value = customer.credit_limit || '';
+                    document.getElementById('status').value = customer.status || 'active';
+                    
+                    document.getElementById('customerModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading customer:', error);
+                showToast('Failed to load customer data', 'error');
+            }
+        }
+
+        // Save customer
+        document.getElementById('customerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // ✅ Validate form before submitting
+            if (!validateCustomerForm()) {
+                return;
+            }
+            
+            const customerData = {
+                company_name: document.getElementById('companyName').value,
+                contact_person: document.getElementById('contactPerson').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value || null,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                province: document.getElementById('province').value || null,
+                customer_type: document.getElementById('customerType').value,
+                payment_terms: document.getElementById('paymentTerms').value,
+                credit_limit: document.getElementById('creditLimit').value ? parseFloat(document.getElementById('creditLimit').value) : null,
+                status: document.getElementById('status').value
+            };
+            
+            try {
+                let response;
+                if (currentCustomerId) {
+                    response = await fetchAPI(`/customers/${currentCustomerId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(customerData)
+                    });
+                } else {
+                    response = await fetchAPI('/customers', {
+                        method: 'POST',
+                        body: JSON.stringify(customerData)
+                    });
+                }
+                
+                if (response.success) {
+                    showToast(response.message, 'success');
+                    closeCustomerModal();
+                    loadCustomers();
+                } else {
+                    showToast(response.message || 'Failed to save customer', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving customer:', error);
+                showToast('Failed to save customer', 'error');
+            }
+        });
+
+        // View customer details
+        async function viewCustomerDetails(id) {
+            try {
+                const response = await fetchAPI(`/customers/${id}`);
+                if (response.success) {
+                    const c = response.data;
+                    
+                    document.getElementById('detailCode').textContent = c.customer_code || '-';
+                    document.getElementById('detailStatus').innerHTML = getStatusBadge(c.status);
+                    document.getElementById('detailCompany').textContent = c.company_name || '-';
+                    document.getElementById('detailContact').textContent = c.contact_person || '-';
+                    document.getElementById('detailPhone').textContent = c.phone || '-';
+                    document.getElementById('detailEmail').textContent = c.email || '-';
+                    document.getElementById('detailCity').textContent = c.city || '-';
+                    document.getElementById('detailProvince').textContent = c.province || '-';
+                    document.getElementById('detailType').innerHTML = getTypeBadge(c.customer_type);
+                    document.getElementById('detailPayment').textContent = c.payment_terms || '-';
+                    // ✅ Better credit limit display: show '-' if not set, formatted value if set
+                    const creditLimitDisplay = (c.credit_limit !== null && c.credit_limit !== undefined) 
+                        ? formatCurrency(c.credit_limit) 
+                        : '<span style="color: var(--gray); font-style: italic;">Not Set</span>';
+                    document.getElementById('detailCredit').innerHTML = creditLimitDisplay;
+                    document.getElementById('detailAddress').textContent = c.address || '-';
+                    
+                    document.getElementById('detailsModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error loading customer details:', error);
+                showToast('Failed to load customer details', 'error');
+            }
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        // Delete customer
+        async function deleteCustomer(id, name) {
+            if (!confirm(`Are you sure you want to delete customer "${name}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetchAPI(`/customers/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.success) {
+                    showToast(response.message, 'success');
+                    loadCustomers();
+                } else {
+                    showToast(response.message || 'Failed to delete customer', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting customer:', error);
+                showToast('Failed to delete customer', 'error');
+            }
+        }
+    </script>
+    <script src="/js/modules/loader.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="js/main.js"></script>
+    <script src="/js/i18n.js"></script>
+</body>
+</html>

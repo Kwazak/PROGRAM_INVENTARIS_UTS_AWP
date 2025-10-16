@@ -1,0 +1,90 @@
+﻿/**
+ * Factory Inventory System - Modular Stylesheet
+ * Version: 2.0.0 (Modular Architecture)
+ * 
+ * Import order: base → themes → layout → components → utilities
+ * Backup: style.legacy.css (2,644 lines)
+ */
+
+/* BASE MODULES (Neutral/Non-color variables) */
+@import './modules/base/variables.css';
+@import './modules/base/design-system.css'; /* LAYOUT OPTIMIZATION SYSTEM */
+@import './modules/base/reset.css';
+@import './modules/base/typography.css';
+
+/* THEME MODULES (Color themes - import sebelum komponen!) */
+@import './modules/themes/light-mode.css'; /* Default theme */
+@import './modules/themes/dark-mode.css';  /* Dark mode override */
+
+/* LAYOUT MODULES */
+@import './modules/layout/sidebar.css';
+@import './modules/layout/topbar.css';
+@import './modules/layout/main.css';
+
+/* COMPONENT MODULES */
+@import './modules/components/buttons.css';
+@import './modules/components/forms.css';
+@import './modules/components/forms-optimized.css'; /* FORM LAYOUT OPTIMIZATION */
+@import './modules/components/cards.css';
+@import './modules/components/tables.css';
+@import './modules/components/modals.css';
+@import './modules/components/alerts.css';
+@import './modules/components/badges.css';
+@import './modules/components/tabs.css';
+@import './modules/components/pagination.css';
+@import './modules/components/page-components.css';
+
+/* UTILITY MODULES */
+@import './modules/utilities/spacing.css';
+@import './modules/utilities/display.css';
+@import './modules/utilities/colors.css';
+@import './modules/utilities/accessibility.css';
+
+/* PAGE-SPECIFIC MODULES */
+@import './modules/pages/login.css';
+@import './modules/pages/qc-pages.css';
+@import './modules/pages/production-qc.css';
+
+/* 
+ * CATATAN STRUKTUR BARU:
+ * 1. variables.css = Layout, spacing, typography (NETRAL)
+ * 2. light-mode.css = Color theme light mode (DEFAULT)
+ * 3. dark-mode.css = Color theme dark mode (TOGGLE dengan .dark-mode class)
+ * 
+ * Untuk toggle dark mode: document.documentElement.classList.toggle('dark-mode')
+ */
+
+/* PRINT STYLES - Landscape orientation for all forms */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0.5in;
+  }
+  
+  /* Optimize forms for printing */
+  .modal-content {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .form-grid {
+    display: block !important;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  /* Hide non-essential elements when printing */
+  .sidebar,
+  .topbar,
+  .action-bar,
+  .modal-header .close-btn,
+  .modal-footer {
+    display: none !important;
+  }
+  
+  .modal-body {
+    padding: 0;
+  }
+}

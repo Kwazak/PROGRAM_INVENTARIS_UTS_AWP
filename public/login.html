@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Factory Inventory System</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Login Page CSS -->
+    <link rel="stylesheet" href="/css/login-page.css?v=20251012">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Load config.js first for API_URL -->
+    <script src="/js/config.js"></script>
+    
+    <style>
+        .login-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .login-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .login-header i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .login-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .login-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .login-form {
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .password-input {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: color 0.3s ease;
+        }
+        
+        .toggle-password:hover {
+            color: #4f46e5;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .alert-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .alert-info {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .link-primary {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .link-primary:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 10px;
+            }
+            
+            .login-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <!-- Login Form -->
+        <div class="login-box" id="loginBox">
+            <div class="login-header">
+                <i class="fas fa-industry"></i>
+                <h1>Factory Inventory System</h1>
+                <p>Sistem Inventaris Pabrik Sendal & Boot</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" name="username" required autocomplete="username" placeholder="Masukkan username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Masukkan password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('password', 'toggleIcon')" title="Show/hide password" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="rememberMe">
+                        <span>Ingat saya</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+
+                <div class="login-help">
+                    <p class="text-muted">Default admin: username: <strong>admin</strong>, password: <strong>admin123</strong></p>
+                    <p class="text-center mt-15">
+                        Belum punya akun? 
+                        <a href="#" onclick="showRegisterForm(); return false;" class="link-primary">
+                            <strong>Daftar di sini</strong>
+                        </a>
+                    </p>
+                </div>
+            </form>
+
+            <div id="errorMessage" class="alert alert-error hidden"></div>
+        </div>
+
+        <!-- Register Form -->
+        <div class="login-box hidden" id="registerBox">
+            <div class="login-header">
+                <i class="fas fa-user-plus"></i>
+                <h1>Daftar Akun Baru</h1>
+                <p>Buat akun untuk mengakses sistem</p>
+            </div>
+
+            <form id="registerForm" class="login-form">
+                <div class="form-group">
+                    <label for="regFullName">
+                        <i class="fas fa-id-card"></i> Nama Lengkap *
+                    </label>
+                    <input type="text" id="regFullName" name="full_name" required autocomplete="name" placeholder="Contoh: John Doe" title="Masukkan nama lengkap Anda">
+                </div>
+
+                <div class="form-group">
+                    <label for="regUsername">
+                        <i class="fas fa-user"></i> Username *
+                    </label>
+                    <input type="text" id="regUsername" name="username" required autocomplete="username" placeholder="Minimal 3 karakter" minlength="3" title="Username minimal 3 karakter">
+                    <small class="form-text">Username untuk login (minimal 3 karakter)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">
+                        <i class="fas fa-envelope"></i> Email *
+                    </label>
+                    <input type="email" id="regEmail" name="email" required autocomplete="email" placeholder="example@email.com" title="Masukkan email yang valid">
+                </div>
+
+                <div class="form-group">
+                    <label for="regPhone">
+                        <i class="fas fa-phone"></i> Nomor Telepon
+                    </label>
+                    <input type="tel" id="regPhone" name="phone" autocomplete="tel" placeholder="081234567890 (opsional)" title="Nomor telepon (opsional)">
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">
+                        <i class="fas fa-lock"></i> Password *
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="regPassword" name="password" required autocomplete="new-password" placeholder="Minimal 6 karakter" minlength="6" title="Password minimal 6 karakter">
+                        <button type="button" class="toggle-password" onclick="togglePassword('regPassword', 'toggleIconReg')" title="Show/hide password" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye" id="toggleIconReg"></i>
+                        </button>
+                    </div>
+                    <small class="form-text">Password minimal 6 karakter</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="regConfirmPassword">
+                        <i class="fas fa-lock"></i> Konfirmasi Password *
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="regConfirmPassword" name="confirmPassword" required autocomplete="new-password" placeholder="Ketik ulang password" title="Ketik ulang password Anda">
+                        <button type="button" class="toggle-password" onclick="togglePassword('regConfirmPassword', 'toggleIconConfirm')" title="Show/hide password" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye" id="toggleIconConfirm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Akun baru akan mendapat akses <strong>Viewer</strong> (read-only). Admin dapat mengubah role Anda nanti.
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Daftar Sekarang
+                </button>
+
+                <div class="login-help">
+                    <p class="text-center mt-15">
+                        Sudah punya akun? 
+                        <a href="#" onclick="showLoginForm(); return false;" class="link-primary">
+                            <strong>Login di sini</strong>
+                        </a>
+                    </p>
+                </div>
+            </form>
+
+            <div id="registerErrorMessage" class="alert alert-error hidden"></div>
+            <div id="registerSuccessMessage" class="alert alert-success hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // API_URL is now loaded from config.js (dynamic based on hostname)
+        
+        // Toggle password visibility
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Show/hide forms
+        function showRegisterForm() {
+            document.getElementById('loginBox').classList.add('hidden');
+            document.getElementById('registerBox').classList.remove('hidden');
+            // Clear any error messages
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('registerErrorMessage').classList.add('hidden');
+            document.getElementById('registerSuccessMessage').classList.add('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginBox').classList.remove('hidden');
+            document.getElementById('registerBox').classList.add('hidden');
+            // Clear any error messages
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('registerErrorMessage').classList.add('hidden');
+            document.getElementById('registerSuccessMessage').classList.add('hidden');
+        }
+
+        // Show error message
+        function showError(message, elementId = 'errorMessage') {
+            const errorDiv = document.getElementById(elementId);
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(message, elementId = 'registerSuccessMessage') {
+            const successDiv = document.getElementById(elementId);
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Save token and user data
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    // Show success message
+                    alert('Login berhasil! Redirecting...');
+
+                    // Redirect to dashboard
+                    window.location.href = '/index.html';
+                } else {
+                    showError(data.message || 'Login gagal');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Terjadi kesalahan saat login. Pastikan server berjalan.');
+            }
+        });
+
+        // Handle register form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fullName = document.getElementById('regFullName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            // Client-side validation
+            if (password !== confirmPassword) {
+                showError('Password dan konfirmasi password tidak cocok!', 'registerErrorMessage');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Password minimal 6 karakter!', 'registerErrorMessage');
+                return;
+            }
+
+            if (username.length < 3) {
+                showError('Username minimal 3 karakter!', 'registerErrorMessage');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        username: username,
+                        email: email,
+                        phone: phone || null,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success message
+                    showSuccess(data.message, 'registerSuccessMessage');
+                    
+                    // Clear form
+                    document.getElementById('registerForm').reset();
+                    
+                    // Auto redirect to login after 3 seconds
+                    setTimeout(() => {
+                        showLoginForm();
+                        // Pre-fill username in login form
+                        document.getElementById('username').value = username;
+                        document.getElementById('password').focus();
+                    }, 3000);
+                } else {
+                    showError(data.message || 'Registrasi gagal', 'registerErrorMessage');
+                }
+            } catch (error) {
+                console.error('Register error:', error);
+                showError('Terjadi kesalahan saat registrasi. Pastikan server berjalan.', 'registerErrorMessage');
+            }
+        });
+
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.href = '/index.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permissions Updated - Please Re-login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .highlight h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .highlight p {
+            color: #856404;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        .info-box h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .info-box li {
+            margin: 5px 0;
+        }
+
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔄</div>
+        <h1>Permissions Telah Diupdate!</h1>
+        
+        <div class="message">
+            Sistem permissions telah diperbarui. Admin sekarang memiliki akses penuh ke semua halaman termasuk <strong>QC Dashboard</strong> dan <strong>QC Inspection</strong>.
+        </div>
+
+        <div class="highlight">
+            <h3>⚠️ PENTING: HARUS LOGOUT DAN LOGIN ULANG</h3>
+            <p>Untuk menggunakan permissions baru, Anda HARUS logout dan login kembali!</p>
+        </div>
+
+        <div class="info-box">
+            <h4>📋 Apa yang Baru untuk Admin:</h4>
+            <ul>
+                <li>✅ Akses penuh ke QC Dashboard</li>
+                <li>✅ Akses penuh ke QC Inspection</li>
+                <li>✅ Full CRUD access ke semua modul (113 permissions)</li>
+                <li>✅ Semua operasi: Create, Read, Update, Delete, Execute</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h4>🔐 Kenapa Harus Logout?</h4>
+            <ul>
+                <li>Permissions tersimpan di JWT token yang dibuat saat login</li>
+                <li>Token lama tidak memiliki permissions QC yang baru</li>
+                <li>Logout & login ulang akan membuat token baru dengan permissions lengkap</li>
+            </ul>
+        </div>
+
+        <div class="timer" id="countdown">5</div>
+        <p>Auto logout dalam <span id="seconds">5</span> detik...</p>
+
+        <button class="btn" onclick="doLogout()">Logout Sekarang</button>
+    </div>
+
+    <script>
+        let seconds = 5;
+        const countdownEl = document.getElementById('countdown');
+        const secondsEl = document.getElementById('seconds');
+
+        function updateCountdown() {
+            if (seconds > 0) {
+                seconds--;
+                countdownEl.textContent = seconds;
+                secondsEl.textContent = seconds;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                doLogout();
+            }
+        }
+
+        function doLogout() {
+            console.log('🔄 Clearing localStorage and logging out...');
+            
+            // Clear all localStorage
+            localStorage.clear();
+            
+            // Show goodbye message
+            document.body.innerHTML = `
+                <div class="container">
+                    <div class="icon">✅</div>
+                    <h1>Logout Berhasil!</h1>
+                    <p class="message">Silakan login kembali untuk menggunakan permissions baru.</p>
+                    <p style="color: #999; margin-top: 20px;">Redirecting to login...</p>
+                </div>
+            `;
+            
+            // Redirect to login
+            setTimeout(() => {
+                window.location.href = '/login.html';
+            }, 2000);
+        }
+
+        // Start countdown
+        setTimeout(updateCountdown, 1000);
+    </script>
+</body>
+</html>

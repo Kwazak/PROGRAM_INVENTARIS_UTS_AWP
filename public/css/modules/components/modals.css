@@ -1,0 +1,380 @@
+/**
+ * Modal Component Styles
+ * Modal dialogs and overlays
+ */
+
+/* Modal Overlay Pattern 1 (New) */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-tertiary);
+    opacity: 0.9;
+    z-index: var(--z-modal);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn var(--transition-base);
+}
+
+/* Modal Direct Pattern (Existing in HTML) - FIXED FOR CENTERING */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-tertiary);
+    opacity: 0.9;
+    z-index: var(--z-modal);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn var(--transition-base);
+}
+
+.modal[style*="display: flex"],
+.modal[style*="display:flex"] {
+    display: flex !important;
+}
+
+/* Modal Content (Inner Box) */
+.modal-content,
+.modal-overlay .modal {
+    background-color: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp var(--transition-base);
+    position: relative;
+}
+
+/* Modal Sizes */
+.modal-content.modal-lg,
+.modal.modal-lg .modal-content,
+.modal-overlay .modal.modal-lg {
+    max-width: 800px;
+}
+
+.modal-content.large,
+.modal.large .modal-content,
+.modal-overlay .modal.large {
+    max-width: 1000px;
+}
+
+.modal-content.modal-sm,
+.modal.modal-sm .modal-content,
+.modal-overlay .modal.modal-sm {
+    max-width: 400px;
+}
+
+.modal-content.modal-xl,
+.modal.modal-xl .modal-content,
+.modal-overlay .modal.modal-xl {
+    max-width: 1200px;
+}
+
+.modal-content.modal-fullscreen,
+.modal.modal-fullscreen .modal-content,
+.modal-overlay .modal.modal-fullscreen {
+    max-width: 100%;
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+}
+
+/* Modal Header */
+.modal-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.modal-close:hover,
+.close-btn:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Close Button (Alternative naming) */
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    line-height: 1;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: var(--spacing-lg);
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Form inside modal */
+.modal form,
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content,
+    .modal-overlay .modal {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .modal-content.modal-lg,
+    .modal-content.modal-xl,
+    .modal.modal-lg .modal-content,
+    .modal.modal-xl .modal-content {
+        max-width: 95%;
+    }
+}
+
+/* ============================================
+   ENHANCED MOBILE OPTIMIZATION
+   ============================================ */
+
+/* Mobile phones - Full screen experience */
+@media (max-width: 767px) {
+    .modal-overlay,
+    .modal {
+        padding: var(--spacing-md);
+        align-items: flex-end; /* Slide up from bottom */
+    }
+    
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        max-height: 90vh;
+        margin: 0;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0; /* Rounded top corners only */
+        box-shadow: var(--shadow-xl);
+        animation: slideUp var(--transition-base);
+    }
+    
+    /* Larger modal sizes become full screen */
+    .modal-content.modal-lg,
+    .modal-content.modal-xl,
+    .modal.modal-lg .modal-content,
+    .modal.modal-xl .modal-content {
+        width: 100%;
+        max-width: 100%;
+        height: 95vh;
+        max-height: 95vh;
+    }
+    
+    .modal-header {
+        padding: var(--spacing-xl) var(--spacing-lg);
+        border-bottom: var(--border-width-1) solid var(--border);
+        min-height: 64px; /* Better touch target */
+    }
+    
+    .modal-title {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-semibold);
+        margin: 0;
+    }
+    
+    .modal-body {
+        padding: var(--spacing-xl) var(--spacing-lg);
+        flex: 1;
+        overflow-y: auto;
+    }
+    
+    .modal-footer {
+        padding: var(--spacing-lg);
+        border-top: var(--border-width-1) solid var(--border);
+        gap: var(--spacing-md);
+    }
+    
+    .modal-footer .btn {
+        flex: 1;
+        min-height: 48px;
+        font-size: var(--font-size-base);
+        font-weight: var(--font-medium);
+    }
+    
+    /* Close button - larger touch target */
+    .modal-close {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-full);
+        background-color: var(--bg-secondary);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-lg);
+        color: var(--text-muted);
+        transition: all var(--transition-fast);
+        position: absolute;
+        top: var(--spacing-md);
+        right: var(--spacing-md);
+        z-index: 1;
+    }
+    
+    .modal-close:hover {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+}
+
+/* Extra small mobile - Maximum usability */
+@media (max-width: 575px) {
+    .modal-overlay,
+    .modal {
+        padding: var(--spacing-sm);
+    }
+    
+    .modal-content {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0; /* Full screen, no rounded corners */
+        animation: slideUp var(--transition-fast);
+    }
+    
+    .modal-header {
+        padding: var(--spacing-2xl) var(--spacing-lg);
+        min-height: 72px;
+    }
+    
+    .modal-title {
+        font-size: var(--font-size-xl);
+    }
+    
+    .modal-body {
+        padding: var(--spacing-2xl) var(--spacing-lg);
+    }
+    
+    .modal-footer {
+        padding: var(--spacing-xl) var(--spacing-lg);
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        min-height: 52px;
+        font-size: var(--font-size-lg);
+    }
+    
+    /* Even larger close button */
+    .modal-close {
+        width: 48px;
+        height: 48px;
+        font-size: var(--font-size-xl);
+        top: var(--spacing-lg);
+        right: var(--spacing-lg);
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .modal-content {
+        /* Prevent accidental closing when scrolling */
+        touch-action: manipulation;
+    }
+    
+    .modal-close {
+        /* Larger touch target for close button */
+        min-width: 48px;
+        min-height: 48px;
+    }
+}
+
+/* Animation for mobile slide-up effect */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

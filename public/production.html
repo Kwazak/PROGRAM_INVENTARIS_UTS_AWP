@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Management - Factory Inventory</title>
+    <link rel="stylesheet" href="/css/style.css?v=20251016">
+    <link rel="stylesheet" href="/css/modules/components/pagination.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-industry"></i>
+            <span data-i18n="app.title">Factory System</span>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-section" data-i18n="nav.mainMenu">Menu Utama</div>
+            <a href="/index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="/inventory.html" class="nav-item">
+                <i class="fas fa-boxes"></i>
+                <span data-i18n="nav.materials">Bahan Baku</span>
+            </a>
+            <a href="/products.html" class="nav-item">
+                <i class="fas fa-shoe-prints"></i>
+                <span data-i18n="nav.products">Produk</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.operational">Operasional</div>
+            <a href="/production.html" class="nav-item active">
+                <i class="fas fa-cogs"></i>
+                <span data-i18n="nav.production">Produksi</span>
+            </a>
+            <a href="/orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span data-i18n="nav.orders">Pesanan</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.masterData">Master Data</div>
+            <a href="/suppliers.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span data-i18n="nav.suppliers">Suppliers</span>
+            </a>
+            <a href="/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span data-i18n="nav.customers">Customers</span>
+            </a>
+            <a href="/warehouse.html" class="nav-item">
+                <i class="fas fa-warehouse"></i>
+                <span data-i18n="nav.warehouse">Warehouse</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.analysis">Analisis</div>
+            <a href="/reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span data-i18n="nav.reports">Laporan</span>
+            </a>
+            
+            <div class="nav-section">Quality Control</div>
+            <a href="/qc-dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>QC Dashboard</span>
+            </a>
+            
+            <div class="nav-section" data-i18n="nav.system">System</div>
+            <a href="/user-management.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span data-i18n="nav.userManagement">User Management</span>
+            </a>
+            <a href="/roles.html" class="nav-item">
+                <i class="fas fa-shield-alt"></i>
+                <span data-i18n="nav.roles">Role Management</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-role" id="userRole"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-i18n="app.logout">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" data-i18n="nav.production">Produksi</h1>
+            <div class="topbar-right">
+                <!-- Language Switcher -->
+                <div class="language-switcher" id="languageSwitcher">
+                    <button class="lang-btn" data-lang="en" onclick="i18n.setLanguage('en')" title="English">
+                        <span class="flag">🇺🇸</span>
+                        <span class="lang-name">EN</span>
+                    </button>
+                    <button class="lang-btn active" data-lang="id" onclick="i18n.setLanguage('id')" title="Bahasa Indonesia">
+                        <span class="flag">🇮🇩</span>
+                        <span class="lang-name">ID</span>
+                    </button>
+                    <button class="lang-btn" data-lang="zh-TW" onclick="i18n.setLanguage('zh-TW')" title="繁體中文">
+                        <span class="flag">🇹🇼</span>
+                        <span class="lang-name">中文</span>
+                    </button>
+                </div>
+                <button class="btn-icon" id="notificationBtn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="content-wrapper">
+            <!-- Stats Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-primary">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="activeWO">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="production.activeWO">Work Order Aktif</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="completedToday">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="production.completedToday">Selesai Hari Ini</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="pendingWO">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="production.pendingWO">WO Pending</div>
+                    </div>
+                </div>
+
+                <div class="metric-card" data-loading="true">
+                    <div class="metric-icon bg-info">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-value" id="todayProduction">
+                            <div class="skeleton skeleton-text"></div>
+                        </div>
+                        <div class="metric-label" data-i18n="production.todayProduction">Produksi Hari Ini</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card filters-card">
+                <div class="card-body">
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <input type="text" id="searchInput" data-i18n-placeholder="production.search" placeholder="Cari nomor WO atau produk..." class="form-control" aria-label="Search work orders">
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="statusFilter" class="form-control" aria-label="Filter status">
+                                <option value="" data-i18n="production.allStatus">Semua Status</option>
+                                <option value="pending" data-i18n="production.pending">Pending</option>
+                                <option value="in_progress" data-i18n="production.inProgress">Dalam Proses</option>
+                                <option value="completed" data-i18n="production.completed">Selesai</option>
+                                <option value="cancelled">Dibatalkan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="priorityFilter" class="form-control" aria-label="Filter by priority">
+                                <option value="">All Priority</option>
+                                <option value="low">Low</option>
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <select id="lineFilter" class="form-control" aria-label="Filter by production line">
+                                <option value="" data-i18n="production.allLines">All Lines</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Orders Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-content">
+                        <h2 data-i18n="production.list">Daftar Work Order</h2>
+                        <div class="card-header-actions">
+                            <button class="btn btn-primary btn-sm" onclick="openAddWOModal()">
+                                <i class="fas fa-plus"></i> <span data-i18n="production.add">Buat Work Order</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="resetFilters()">
+                                <i class="fas fa-redo"></i> <span data-i18n="app.reset">Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="production.woNumber">No WO</th>
+                                    <th data-i18n="production.product">Produk</th>
+                                    <th data-i18n="production.quantity">Kuantitas</th>
+                                    <th data-i18n="production.progress">Progress</th>
+                                    <th data-i18n="production.quality">Bagus/Reject</th>
+                                    <th data-i18n="production.line">Lini Produksi</th>
+                                    <th data-i18n="production.priority">Prioritas</th>
+                                    <th data-i18n="app.status">Status</th>
+                                    <th data-i18n="production.startDate">Tgl Mulai</th>
+                                    <th data-i18n="production.targetDate">Tgl Target</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workOrdersTableBody">
+                                <tr>
+                                    <td colspan="11" class="text-center">
+                                        <i class="fas fa-spinner fa-spin"></i> Memuat...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div id="workOrdersPaginationContainer" class="pagination-container"></div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Work Order Modal -->
+    <div id="woModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="modalTitle">Create Work Order</h2>
+                <button class="close-btn" onclick="closeWOModal()">&times;</button>
+            </div>
+            <form id="woForm">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>WO Number *</label>
+                            <input type="text" id="woNumber" required class="form-control" placeholder="e.g. WO-20241002-001">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Product *</label>
+                            <select id="productId" required class="form-control" aria-label="Select product">
+                                <option value="">Select Product</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Quantity Planned *</label>
+                            <input type="number" id="quantityPlanned" required class="form-control" placeholder="e.g. 1000" min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Production Line *</label>
+                            <select id="productionLineId" required class="form-control" aria-label="Select production line">
+                                <option value="">Select Line</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Priority *</label>
+                            <select id="priority" required class="form-control" aria-label="Select priority">
+                                <option value="normal">Normal</option>
+                                <option value="low">Low</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Shift</label>
+                            <select id="shift" class="form-control" aria-label="Select shift">
+                                <option value="pagi">Pagi</option>
+                                <option value="siang">Siang</option>
+                                <option value="malam">Malam</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Start Date *</label>
+                            <input type="date" id="startDate" required class="form-control" title="Select start date" aria-label="Start date">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Due Date *</label>
+                            <input type="date" id="dueDate" required class="form-control" title="Select due date" aria-label="Due date">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="notes" rows="3" class="form-control" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeWOModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Work Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Production Tracking Modal -->
+    <div id="trackingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Production Tracking</h2>
+                <button class="close-btn" onclick="closeTrackingModal()">&times;</button>
+            </div>
+            <form id="trackingForm">
+                <div class="modal-body">
+                    <div id="woInfo" class="alert alert-info">
+                        <strong>WO:</strong> <span id="trackingWONumber"></span><br>
+                        <strong>Product:</strong> <span id="trackingProduct"></span><br>
+                        <strong>Planned:</strong> <span id="trackingPlanned"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tracking Date *</label>
+                        <input type="date" id="trackingDate" required class="form-control" title="Select tracking date" aria-label="Tracking date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Quantity Produced *</label>
+                        <input type="number" id="quantityProduced" required class="form-control" placeholder="e.g. 200" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Quantity Good *</label>
+                        <input type="number" id="quantityGood" required class="form-control" placeholder="e.g. 195" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Quantity Reject *</label>
+                        <input type="number" id="quantityReject" required class="form-control" placeholder="e.g. 5" min="0">
+                    </div>
+                    
+                    <!-- QC Inspection Section -->
+                    <div class="form-group">
+                        <label>QC Inspection Details</label>
+                        <button type="button" class="btn btn-warning btn-block" id="btnQCInspection" onclick="openQCInspectionModal()">
+                            <i class="fas fa-clipboard-check"></i> Detail QC Inspection
+                            <span id="qcInspectionCount" class="badge badge-light ml-2">0</span>
+                        </button>
+                        <small class="text-muted d-block mt-1">
+                            <i class="fas fa-info-circle"></i> Klik untuk input detail inspeksi reject (optional)
+                        </small>
+                    </div>
+                    
+                    <!-- QC Inspections List (if any) -->
+                    <div id="qcInspectionsList" class="qc-list" style="display: none;">
+                        <div class="qc-list-header">
+                            <strong><i class="fas fa-list"></i> QC Inspections:</strong>
+                        </div>
+                        <div id="qcInspectionsItems"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Shift</label>
+                        <select id="trackingShift" class="form-control" aria-label="Select shift">
+                            <option value="1">Pagi</option>
+                            <option value="2">Siang</option>
+                            <option value="3">Malam</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="trackingNotes" rows="2" class="form-control" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeTrackingModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save Tracking
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Work Order Details</h2>
+                <button class="close-btn" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="woDetailsContent">
+                    <div class="details-section">
+                        <h3>Informasi Dasar</h3>
+                        <div class="details-grid">
+                            <div><strong>No WO:</strong> <span id="detailWONumber">-</span></div>
+                            <div><strong>Produk:</strong> <span id="detailProduct">-</span></div>
+                            <div><strong>Target Kuantitas:</strong> <span id="detailQuantityPlanned">-</span></div>
+                            <div><strong>Status:</strong> <span id="detailStatus">-</span></div>
+                            <div><strong>Prioritas:</strong> <span id="detailPriority">-</span></div>
+                            <div><strong>Lini Produksi:</strong> <span id="detailLine">-</span></div>
+                            <div><strong>Tanggal Mulai:</strong> <span id="detailStartDate">-</span></div>
+                            <div><strong>Tanggal Target:</strong> <span id="detailDueDate">-</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h3>Progress Produksi</h3>
+                        <div class="details-grid">
+                            <div><strong>Total Diproduksi:</strong> <span id="detailProduced">0</span></div>
+                            <div><strong>Kualitas Bagus:</strong> <span id="detailGood">0</span></div>
+                            <div><strong>Reject:</strong> <span id="detailReject">0</span></div>
+                            <div><strong>Efisiensi:</strong> <span id="detailEfficiency">0%</span></div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="detailProgressBar">0%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h3>Riwayat Tracking Produksi</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Diproduksi</th>
+                                        <th>Bagus</th>
+                                        <th>Reject</th>
+                                        <th>Shift</th>
+                                        <th>Catatan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="trackingHistoryBody">
+                                    <tr><td colspan="6" class="text-center">Belum ada data tracking</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- QC Inspection Modal -->
+    <div id="qcInspectionModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header modal-header-primary">
+                <h2><i class="fas fa-clipboard-check"></i> QC Inspection</h2>
+                <button class="close-btn" onclick="closeQCInspectionModal()">&times;</button>
+            </div>
+            <form id="qcInspectionForm">
+                <div class="modal-body">
+                    <!-- Basic Info Card -->
+                    <div class="card mb-3 card-info-primary">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <small class="text-muted">WO Number</small>
+                                    <h6 class="mb-0"><strong id="qcWONumber">-</strong></h6>
+                                </div>
+                                <div class="col-md-4">
+                                    <small class="text-muted">Product</small>
+                                    <h6 class="mb-0"><strong id="qcProduct">-</strong></h6>
+                                </div>
+                                <div class="col-md-2">
+                                    <small class="text-muted">Planned Qty</small>
+                                    <h6 class="mb-0"><strong id="qcPlanned">-</strong></h6>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Quantity Reject</small>
+                                    <h6 class="mb-0 text-danger"><strong id="qcQuantityReject">-</strong> pcs</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="qcInspectionDate">Inspection Date <span class="text-danger">*</span></label>
+                                <input type="date" id="qcInspectionDate" required class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="qcShift">Shift <span class="text-danger">*</span></label>
+                                <select id="qcShift" required class="form-control">
+                                    <option value="">-- Select Shift --</option>
+                                    <option value="1">Shift 1 - Pagi (07:00 - 15:00)</option>
+                                    <option value="2">Shift 2 - Siang (15:00 - 23:00)</option>
+                                    <option value="3">Shift 3 - Malam (23:00 - 07:00)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qcTotalInspected">Total Inspected (from reject) <span class="text-danger">*</span></label>
+                        <input type="number" id="qcTotalInspected" required class="form-control" placeholder="Enter quantity to inspect" min="0">
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i> Maximum: <strong><span id="qcMaxInspect">0</span> pcs</strong> (from quantity reject)
+                        </small>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- UPPER Defects Section -->
+                    <div class="card mb-3">
+                        <div class="card-header card-header-primary">
+                            <h5 class="mb-0">
+                                <i class="fas fa-shoe-prints text-primary"></i> UPPER DEFECTS
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_jahitan_lepas" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_jahitan_lepas">Jahitan lepas</label>
+                                    </div>
+                                    <input type="number" id="qty_jahitan_lepas" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_benang_nongol" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_benang_nongol">Benang nongol</label>
+                                    </div>
+                                    <input type="number" id="qty_benang_nongol" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_warna_belang" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_warna_belang">Warna belang</label>
+                                    </div>
+                                    <input type="number" id="qty_warna_belang" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_noda_lem" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_noda_lem">Noda lem</label>
+                                    </div>
+                                    <input type="number" id="qty_noda_lem" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SOLE Defects Section -->
+                    <div class="card mb-3">
+                        <div class="card-header card-header-warning">
+                            <h5 class="mb-0">
+                                <i class="fas fa-layer-group text-warning"></i> SOLE DEFECTS
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_sole_miring" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_sole_miring">Sole miring</label>
+                                    </div>
+                                    <input type="number" id="qty_sole_miring" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_celah_upper_sole" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_celah_upper_sole">Celah upper-sole</label>
+                                    </div>
+                                    <input type="number" id="qty_celah_upper_sole" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_bonding_lemah" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_bonding_lemah">Bonding lemah</label>
+                                    </div>
+                                    <input type="number" id="qty_bonding_lemah" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_sole_retak" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_sole_retak">Sole retak</label>
+                                    </div>
+                                    <input type="number" id="qty_sole_retak" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FINISHING Defects Section -->
+                    <div class="card mb-3">
+                        <div class="card-header card-header-success">
+                            <h5 class="mb-0">
+                                <i class="fas fa-paint-brush text-success"></i> FINISHING DEFECTS
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_goresan" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_goresan">Goresan</label>
+                                    </div>
+                                    <input type="number" id="qty_goresan" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="defect_aksesoris_rusak" class="custom-control-input defect-checkbox">
+                                        <label class="custom-control-label" for="defect_aksesoris_rusak">Aksesoris rusak</label>
+                                    </div>
+                                    <input type="number" id="qty_aksesoris_rusak" class="form-control form-control-sm mt-2 qty-input" min="0" placeholder="Quantity" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OTHERS Section -->
+                    <div class="card mb-3">
+                        <div class="card-header card-header-danger">
+                            <h5 class="mb-0">
+                                <i class="fas fa-exclamation-triangle text-danger"></i> OTHERS
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="qcOthersDetail">Detail Defect Lainnya</label>
+                                <textarea id="qcOthersDetail" rows="2" class="form-control" placeholder="Jelaskan defect lainnya..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="qcOthersQty">Quantity Others</label>
+                                <input type="number" id="qcOthersQty" class="form-control" min="0" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Summary Section -->
+                    <div class="card mb-3 card-summary">
+                        <div class="card-body">
+                            <h5 class="mb-3"><i class="fas fa-chart-pie"></i> Inspection Summary</h5>
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="summary-metric">
+                                        <small class="text-muted d-block mb-2">Total Defect</small>
+                                        <h3 class="mb-0">
+                                            <span id="qcTotalDefect" class="badge badge-danger badge-large">0</span>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-metric">
+                                        <small class="text-muted d-block mb-2">Defect Rate</small>
+                                        <h3 class="mb-0">
+                                            <span id="qcDefectRate" class="badge badge-warning badge-large">0%</span>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-metric">
+                                        <small class="text-muted d-block mb-2">Auto Decision</small>
+                                        <h3 class="mb-0">
+                                            <span id="qcAutoDecision" class="badge badge-secondary badge-large">-</span>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Decision -->
+                    <div class="form-group">
+                        <label>Decision <span class="text-danger">*</span></label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="decision_release" name="decision" value="RELEASE" class="custom-control-input">
+                                    <label class="custom-control-label" for="decision_release">
+                                        <i class="fas fa-check-circle text-success"></i> <strong>RELEASE</strong>
+                                        <br><small class="text-muted">Defect rate < 5%</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="decision_rework" name="decision" value="REWORK" class="custom-control-input">
+                                    <label class="custom-control-label" for="decision_rework">
+                                        <i class="fas fa-redo text-warning"></i> <strong>REWORK</strong>
+                                        <br><small class="text-muted">Defect rate 5-10%</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="decision_reject" name="decision" value="REJECT" checked class="custom-control-input">
+                                    <label class="custom-control-label" for="decision_reject">
+                                        <i class="fas fa-times-circle text-danger"></i> <strong>REJECT</strong>
+                                        <br><small class="text-muted">Defect rate > 10%</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="qcInspector">Inspector <span class="text-danger">*</span></label>
+                                <input type="text" id="qcInspector" required class="form-control" placeholder="Inspector name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="qcSupervisor">Supervisor</label>
+                                <input type="text" id="qcSupervisor" class="form-control" placeholder="Supervisor name (optional)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qcNotes">Additional Notes</label>
+                        <textarea id="qcNotes" rows="3" class="form-control" placeholder="Enter any additional notes or observations..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer modal-footer-light">
+                    <button type="button" class="btn btn-secondary" onclick="closeQCInspectionModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="resetQCForm()">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save QC Inspection
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/modules/loader.js"></script>
+    <script src="/js/modules/utils/pagination.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="/js/role-config.js"></script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/qc-inspection-production.js"></script>
+    <script src="/js/production.js"></script>
+</body>
+</html>
+
